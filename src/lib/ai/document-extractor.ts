@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { getServiceKey } from "@/lib/services/get-service-key";
 
 /**
  * Extraction IA (RGE Connect Vision) des documents d'onboarding.
@@ -201,12 +202,13 @@ export async function extractDocument(
   pdfBase64: string,
   kind: DocumentKind
 ): Promise<DocumentExtractionResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = await getServiceKey("anthropic", "api_key");
   if (!apiKey) {
     return {
       success: false,
       code: "missing_key",
-      error: "La clé API Anthropic n'est pas configurée.",
+      error:
+        "La clé API Anthropic n'est pas configurée. Un super admin doit la renseigner depuis /super-admin/api-keys.",
     };
   }
 
@@ -221,7 +223,7 @@ export async function extractDocument(
     };
   }
 
-  const baseURL = process.env.ANTHROPIC_BASE_URL;
+  const baseURL = await getServiceKey("anthropic", "base_url");
   const client = new Anthropic({ apiKey, ...(baseURL ? { baseURL } : {}) });
 
   try {

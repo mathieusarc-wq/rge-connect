@@ -728,6 +728,42 @@ export type Database = {
           },
         ]
       }
+      service_credentials: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_sensitive: boolean
+          key_name: string
+          service: string
+          updated_at: string
+          updated_by: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_sensitive?: boolean
+          key_name: string
+          service: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_sensitive?: boolean
+          key_name?: string
+          service?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
       subcontractor_documents: {
         Row: {
           created_at: string
@@ -904,6 +940,27 @@ export type Database = {
         }
         Relationships: []
       }
+      super_admin_whitelist: {
+        Row: {
+          created_at: string
+          email: string
+          granted_by: string | null
+          note: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          granted_by?: string | null
+          note?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          granted_by?: string | null
+          note?: string | null
+        }
+        Relationships: []
+      }
       supplier_catalog: {
         Row: {
           category: string
@@ -1016,6 +1073,10 @@ export type Database = {
     Functions: {
       current_installer_id: { Args: never; Returns: string }
       current_subcontractor_id: { Args: never; Returns: string }
+      get_service_credential: {
+        Args: { p_key_name: string; p_service: string }
+        Returns: string
+      }
       is_installer_member: {
         Args: { target_installer_id: string }
         Returns: boolean

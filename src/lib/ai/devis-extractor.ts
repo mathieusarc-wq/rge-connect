@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { getServiceKey } from "@/lib/services/get-service-key";
 
 /**
  * Extraction automatique des données d'un devis PDF via Claude Opus 4.7.
@@ -159,19 +160,18 @@ const EXTRACTION_TOOL = {
  * @returns résultat typé avec succès + données ou échec + code d'erreur
  */
 export async function extractDevisData(pdfBase64: string): Promise<ExtractionResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = await getServiceKey("anthropic", "api_key");
   if (!apiKey) {
     return {
       success: false,
       code: "missing_key",
       error:
-        "La clé API Anthropic n'est pas configurée. Ajoute ANTHROPIC_API_KEY dans les variables d'environnement Vercel.",
+        "La clé API Anthropic n'est pas configurée. Un super admin doit la renseigner depuis /super-admin/api-keys.",
     };
   }
 
-  // baseURL optionnel pour router via Vercel AI Gateway (cost tracking + failover)
-  // sans modifier le code. Setter ANTHROPIC_BASE_URL=https://gateway.vercel.sh/...
-  const baseURL = process.env.ANTHROPIC_BASE_URL;
+  // baseURL optionnel pour router via Vercel AI Gateway
+  const baseURL = await getServiceKey("anthropic", "base_url");
   const client = new Anthropic({ apiKey, ...(baseURL ? { baseURL } : {}) });
 
   try {
