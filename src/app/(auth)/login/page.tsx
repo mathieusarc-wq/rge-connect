@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState<"subcontractor" | "installer">("subcontractor");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,6 +64,32 @@ export default function LoginPage() {
           <p className="mt-2 text-sm font-body text-ink-500">
             Accédez à votre espace RGE Connect
           </p>
+
+          {/* Role switch */}
+          <div className="mt-6 flex rounded-lg bg-cream-100 p-1">
+            <button
+              type="button"
+              onClick={() => setRole("subcontractor")}
+              className={`flex-1 rounded-md px-4 py-2.5 text-sm font-body font-medium transition-all duration-200 ${
+                role === "subcontractor"
+                  ? "bg-white text-forest-600 shadow-sm"
+                  : "text-ink-500 hover:text-ink-700"
+              }`}
+            >
+              Sous-traitant
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("installer")}
+              className={`flex-1 rounded-md px-4 py-2.5 text-sm font-body font-medium transition-all duration-200 ${
+                role === "installer"
+                  ? "bg-white text-forest-600 shadow-sm"
+                  : "text-ink-500 hover:text-ink-700"
+              }`}
+            >
+              Installateur
+            </button>
+          </div>
 
           {/* Error */}
           {error && (
@@ -158,10 +185,10 @@ export default function LoginPage() {
           <p className="mt-8 text-center text-sm font-body text-ink-500">
             Pas encore de compte ?{" "}
             <Link
-              href="/register"
+              href={`/register?role=${role}`}
               className="font-medium text-forest-500 hover:text-forest-700 transition-colors"
             >
-              Créer un compte
+              Créer un compte {role === "subcontractor" ? "sous-traitant" : "installateur"}
             </Link>
           </p>
 
