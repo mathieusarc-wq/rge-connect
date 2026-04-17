@@ -41,9 +41,9 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      {/* Left — Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 py-8 lg:py-0 bg-white lg:bg-white">
-        <div className="w-full max-w-md mx-auto">
+      {/* Left — Form (centré horizontalement + verticalement) */}
+      <div className="flex-1 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-white">
+        <div className="w-full max-w-md">
           {/* Logo desktop only */}
           <Link href="/" className="hidden lg:flex items-center gap-0 mb-12 justify-center">
             <span className="font-display text-xl font-extrabold tracking-tight text-forest-500">
