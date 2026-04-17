@@ -2,10 +2,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import type { EmailOtpType } from "@supabase/supabase-js";
 
 interface PageProps {
   searchParams: Promise<{
-    code?: string;
+    token_hash?: string;
+    type?: string;
+    code?: string; // fallback pour le flow PKCE au cas où
     error?: string;
     error_description?: string;
   }>;
@@ -14,7 +17,7 @@ interface PageProps {
 export default async function ActivatePage({ searchParams }: PageProps) {
   const params = await searchParams;
 
-  // Cas erreur explicite depuis Supabase
+  // Erreur explicite depuis Supabase
   if (params.error) {
     return (
       <ActivationResult
@@ -28,10 +31,14 @@ export default async function ActivatePage({ searchParams }: PageProps) {
     );
   }
 
-  // Cas code PKCE : on exchange
-  if (params.code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(params.code);
+  const supabase = await createClient();
+
+  // FLOW PRINCIPAL : token_hash (plus robuste, fonctionne cross-browser)
+  if (params.token_hash && params.type) {
+    const { error } = await supabase.auth.verifyOtp({
+      type: params.type as EmailOtpType,
+      token_hash: params.token_hash,
+    });
 
     if (error) {
       return (
@@ -43,9 +50,7 @@ export default async function ActivatePage({ searchParams }: PageProps) {
       );
     }
 
-    // Succès — le user est maintenant loggé
-    // Prochaine étape : onboarding documents (à venir en étape 6)
-    // Pour l'instant, redirige vers dashboard
+    // Succès — le user est loggé, redirect vers son dashboard
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -57,14 +62,52 @@ export default async function ActivatePage({ searchParams }: PageProps) {
         .eq("id", user.id)
         .single();
 
-      const target = profile?.role === "installer" ? "/installer/dashboard" : "/dashboard";
+      const target =
+        profile?.role === "installer" ? "/installer/dashboard" : "/dashboard";
       redirect(target);
     }
 
     redirect("/login");
   }
 
-  // Cas par défaut : pas de code
+  // FALLBACK : code PKCE (pour la compatibilité avec les anciens emails)
+  if (params.code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(params.code);
+
+    if (error) {
+      return (
+        <ActivationResult
+          kind="error"
+          title="Activation échouée"
+          message={
+            error.message.includes("code verifier")
+              ? "Ce lien a été ouvert sur un autre appareil ou navigateur. Demande un nouveau lien d'activation depuis la page de connexion."
+              : error.message
+          }
+        />
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      const target =
+        profile?.role === "installer" ? "/installer/dashboard" : "/dashboard";
+      redirect(target);
+    }
+
+    redirect("/login");
+  }
+
+  // Cas par défaut : pas de paramètres
   return (
     <ActivationResult
       kind="info"
