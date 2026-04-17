@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import ActivationSuccess from "./success-client";
 
 interface PageProps {
   searchParams: Promise<{
     token_hash?: string;
     type?: string;
-    code?: string; // fallback pour le flow PKCE au cas où
+    code?: string;
     error?: string;
     error_description?: string;
   }>;
@@ -17,7 +17,7 @@ interface PageProps {
 export default async function ActivatePage({ searchParams }: PageProps) {
   const params = await searchParams;
 
-  // Erreur explicite depuis Supabase
+  // Erreur explicite
   if (params.error) {
     return (
       <ActivationResult
@@ -33,7 +33,7 @@ export default async function ActivatePage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
-  // FLOW PRINCIPAL : token_hash (plus robuste, fonctionne cross-browser)
+  // FLOW PRINCIPAL : token_hash
   if (params.token_hash && params.type) {
     const { error } = await supabase.auth.verifyOtp({
       type: params.type as EmailOtpType,
@@ -50,27 +50,27 @@ export default async function ActivatePage({ searchParams }: PageProps) {
       );
     }
 
-    // Succès — le user est loggé, redirect vers son dashboard
+    // Succès — récupère le profile pour personnaliser + déterminer le target onboarding
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+    const { data: profile } = user
+      ? await supabase
+          .from("profiles")
+          .select("role, first_name")
+          .eq("id", user.id)
+          .single()
+      : { data: null };
 
-      const target =
-        profile?.role === "installer" ? "/installer/dashboard" : "/dashboard";
-      redirect(target);
-    }
+    const firstName = profile?.first_name ?? "";
+    const onboardingPath = "/onboarding/documents";
 
-    redirect("/login");
+    // Affiche l'écran success côté client qui redirige ensuite
+    return <ActivationSuccess firstName={firstName} redirectTo={onboardingPath} />;
   }
 
-  // FALLBACK : code PKCE (pour la compatibilité avec les anciens emails)
+  // Fallback code PKCE
   if (params.code) {
     const { error } = await supabase.auth.exchangeCodeForSession(params.code);
 
@@ -81,7 +81,7 @@ export default async function ActivatePage({ searchParams }: PageProps) {
           title="Activation échouée"
           message={
             error.message.includes("code verifier")
-              ? "Ce lien a été ouvert sur un autre appareil ou navigateur. Demande un nouveau lien d'activation depuis la page de connexion."
+              ? "Ce lien a été ouvert sur un autre appareil. Demande un nouveau lien depuis la page de connexion."
               : error.message
           }
         />
@@ -92,22 +92,23 @@ export default async function ActivatePage({ searchParams }: PageProps) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+    const { data: profile } = user
+      ? await supabase
+          .from("profiles")
+          .select("role, first_name")
+          .eq("id", user.id)
+          .single()
+      : { data: null };
 
-      const target =
-        profile?.role === "installer" ? "/installer/dashboard" : "/dashboard";
-      redirect(target);
-    }
-
-    redirect("/login");
+    return (
+      <ActivationSuccess
+        firstName={profile?.first_name ?? ""}
+        redirectTo="/onboarding/documents"
+      />
+    );
   }
 
-  // Cas par défaut : pas de paramètres
+  // Par défaut : pas de paramètres
   return (
     <ActivationResult
       kind="info"
