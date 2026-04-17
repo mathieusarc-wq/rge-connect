@@ -8,6 +8,7 @@ import {
 import { rateLimit, RATE_LIMITS } from "@/lib/security/rate-limit";
 import { logAudit } from "@/lib/security/audit";
 import { headers } from "next/headers";
+import { sendWelcomeSMS } from "@/lib/brevo/send-sms";
 
 export type SignUpResult =
   | { success: true }
@@ -173,6 +174,21 @@ export async function signUpSubcontractorAction(raw: unknown): Promise<SignUpRes
     },
   });
 
+  // 6. SMS de bienvenue (fail-open — ne bloque pas si erreur)
+  const smsResult = await sendWelcomeSMS({
+    phone: data.phone,
+    firstName: data.first_name,
+  });
+  if (!smsResult.success && smsResult.code !== "skipped_no_phone") {
+    await logAudit({
+      action: "update",
+      actorId: authData.user.id,
+      metadata: { event: "welcome_sms_failed", reason: smsResult.code, error: smsResult.error },
+      success: false,
+      errorMessage: smsResult.error,
+    });
+  }
+
   return { success: true };
 }
 
@@ -314,6 +330,21 @@ export async function signUpInstallerAction(raw: unknown): Promise<SignUpResult>
       plan: "discovery",
     },
   });
+
+  // SMS de bienvenue (fail-open)
+  const smsResult = await sendWelcomeSMS({
+    phone: data.phone,
+    firstName: data.first_name,
+  });
+  if (!smsResult.success && smsResult.code !== "skipped_no_phone") {
+    await logAudit({
+      action: "update",
+      actorId: authData.user.id,
+      metadata: { event: "welcome_sms_failed", reason: smsResult.code, error: smsResult.error },
+      success: false,
+      errorMessage: smsResult.error,
+    });
+  }
 
   return { success: true };
 }
