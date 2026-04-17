@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useTransition } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,13 +13,21 @@ import {
   MapPin,
   Wrench,
   Euro,
-  Calendar,
-  FileText,
   Check,
+  FileText,
+  Sparkles,
+  Upload,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  X,
+  SkipForward,
 } from "lucide-react";
 import Link from "next/link";
+import { analyzeDevis } from "./actions";
+import type { MissionType } from "@/lib/ai/devis-extractor";
 
-const missionTypes = [
+const missionTypes: { value: MissionType; label: string }[] = [
   { value: "pac_air_eau", label: "PAC Air-Eau" },
   { value: "pac_air_air", label: "PAC Air-Air" },
   { value: "climatisation", label: "Climatisation" },
@@ -30,6 +38,7 @@ const missionTypes = [
 ];
 
 const steps = [
+  { id: 0, title: "Devis", icon: Sparkles },
   { id: 1, title: "Client final", icon: User },
   { id: 2, title: "Adresse chantier", icon: MapPin },
   { id: 3, title: "Équipement", icon: Wrench },
@@ -37,36 +46,351 @@ const steps = [
   { id: 5, title: "Récapitulatif", icon: Check },
 ];
 
-export default function NewMissionPage() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    client_first_name: "",
-    client_last_name: "",
-    client_email: "",
-    client_phone: "",
-    address: "",
-    city: "",
-    postal_code: "",
-    type: "",
-    equipment: "",
-    equipment_brand: "",
-    notes: "",
-    amount_ht: "",
-    amount_ttc: "",
-    preferred_start_date: "",
-    preferred_end_date: "",
-    payment_delay_days: 30,
-  });
+type FormState = {
+  client_first_name: string;
+  client_last_name: string;
+  client_email: string;
+  client_phone: string;
+  address: string;
+  city: string;
+  postal_code: string;
+  type: string;
+  equipment: string;
+  equipment_brand: string;
+  notes: string;
+  amount_ht: string;
+  amount_ttc: string;
+  preferred_start_date: string;
+  preferred_end_date: string;
+  payment_delay_days: number;
+};
 
-  const update = (key: string, value: string | number) =>
+const emptyForm: FormState = {
+  client_first_name: "",
+  client_last_name: "",
+  client_email: "",
+  client_phone: "",
+  address: "",
+  city: "",
+  postal_code: "",
+  type: "",
+  equipment: "",
+  equipment_brand: "",
+  notes: "",
+  amount_ht: "",
+  amount_ttc: "",
+  preferred_start_date: "",
+  preferred_end_date: "",
+  payment_delay_days: 30,
+};
+
+/* ================ UPLOAD DEVIS STEP ================ */
+function DevisUploadStep({
+  onExtracted,
+  onSkip,
+}: {
+  onExtracted: (form: FormState, fields: string[]) => void;
+  onSkip: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [confidence, setConfidence] = useState<{
+    overall: number;
+    quality: string;
+    count: number;
+  } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (f: File | null) => {
+    setError(null);
+    setConfidence(null);
+    if (!f) return;
+    if (f.type !== "application/pdf") {
+      setError("Seuls les PDF sont acceptés.");
+      return;
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      setError(`Fichier trop volumineux (${(f.size / 1024 / 1024).toFixed(1)} MB). Max 10 MB.`);
+      return;
+    }
+    setFile(f);
+  };
+
+  const runExtraction = () => {
+    if (!file) return;
+    setError(null);
+    const formData = new FormData();
+    formData.append("devis", file);
+
+    startTransition(async () => {
+      const result = await analyzeDevis(formData);
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+
+      const d = result.data;
+      const filled: FormState = {
+        ...emptyForm,
+        client_first_name: d.client_first_name ?? "",
+        client_last_name: d.client_last_name ?? "",
+        client_email: d.client_email ?? "",
+        client_phone: d.client_phone ?? "",
+        address: d.address ?? "",
+        city: d.city ?? "",
+        postal_code: d.postal_code ?? "",
+        type: d.type === "unknown" ? "" : (d.type ?? ""),
+        equipment: d.equipment ?? "",
+        equipment_brand: d.equipment_brand ?? "",
+        notes: d.notes ?? "",
+        amount_ht: d.amount_ht ? String(d.amount_ht) : "",
+        amount_ttc: d.amount_ttc ? String(d.amount_ttc) : "",
+        preferred_start_date: d.preferred_start_date ?? "",
+        preferred_end_date: "",
+        payment_delay_days: 30,
+      };
+      setConfidence({
+        overall: d.confidence.overall,
+        quality: d.confidence.extraction_quality,
+        count: d.extracted_fields.length,
+      });
+      // Slight delay to show success state
+      setTimeout(() => onExtracted(filled, d.extracted_fields), 800);
+    });
+  };
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Sparkles className="h-4 w-4 text-gold-500" strokeWidth={1.8} />
+          <span className="text-xs font-mono uppercase tracking-[0.15em] text-gold-700 font-semibold">
+            Extraction automatique par IA
+          </span>
+        </div>
+        <h3 className="text-lg font-display font-bold text-ink-900">
+          Upload ton devis signé
+        </h3>
+        <p className="text-sm font-body text-ink-500 mt-1">
+          Claude analyse le PDF et pré-remplit automatiquement les prochaines étapes. Tu peux aussi remplir manuellement.
+        </p>
+      </div>
+
+      {/* Drop zone */}
+      {!file && (
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            handleFile(e.dataTransfer.files?.[0] ?? null);
+          }}
+          onClick={() => inputRef.current?.click()}
+          className={`rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-all ${
+            dragOver
+              ? "border-gold-500 bg-gold-500/5"
+              : "border-forest-200 bg-cream-50 hover:border-forest-300 hover:bg-cream-100"
+          }`}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+          />
+          <div className="mx-auto h-12 w-12 rounded-full bg-forest-500/10 flex items-center justify-center mb-3">
+            <Upload className="h-5 w-5 text-forest-500" strokeWidth={1.8} />
+          </div>
+          <p className="text-sm font-body font-medium text-ink-900">
+            Glisse ton devis ici ou clique pour sélectionner
+          </p>
+          <p className="text-xs font-body text-ink-500 mt-1">
+            PDF uniquement · max 10 MB
+          </p>
+        </div>
+      )}
+
+      {/* Selected file */}
+      {file && (
+        <div className="rounded-xl border border-forest-100 bg-white p-4 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-forest-50 flex items-center justify-center flex-shrink-0">
+            <FileText className="h-5 w-5 text-forest-500" strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-body font-medium text-ink-900 truncate">
+              {file.name}
+            </p>
+            <p className="text-xs font-body text-ink-500">
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+          </div>
+          {!isPending && !confidence && (
+            <button
+              onClick={() => {
+                setFile(null);
+                setError(null);
+              }}
+              className="p-2 rounded-lg text-ink-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+            >
+              <X className="h-4 w-4" strokeWidth={1.8} />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+          <div>
+            <p className="text-sm font-body font-medium text-red-900">
+              Extraction impossible
+            </p>
+            <p className="text-xs font-body text-red-600 mt-0.5">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Loading */}
+      {isPending && (
+        <div className="rounded-lg bg-forest-50 border border-forest-100 p-4 flex items-center gap-3">
+          <Loader2 className="h-5 w-5 text-forest-500 animate-spin" strokeWidth={1.8} />
+          <div>
+            <p className="text-sm font-body font-medium text-ink-900">
+              Claude analyse le devis…
+            </p>
+            <p className="text-xs font-body text-ink-500 mt-0.5">
+              Extraction des données en cours (5-15 secondes)
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Success */}
+      {confidence && (
+        <div className="rounded-lg bg-gradient-to-r from-gold-500/10 to-forest-500/5 border border-gold-300/40 p-5">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="h-5 w-5 text-forest-500 flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+            <div className="flex-1">
+              <p className="text-sm font-body font-semibold text-ink-900">
+                Extraction réussie · qualité {confidence.quality}
+              </p>
+              <p className="text-xs font-body text-ink-600 mt-1">
+                {confidence.count} champs pré-remplis · score de confiance {confidence.overall}%
+              </p>
+              <p className="text-xs font-body text-gold-700 mt-2 flex items-center gap-1">
+                <ArrowRight className="h-3 w-3" />
+                Passage aux étapes suivantes…
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex items-center justify-between pt-3 border-t border-forest-100">
+        <button
+          onClick={onSkip}
+          className="inline-flex items-center gap-1.5 text-sm font-body text-ink-500 hover:text-ink-700 transition-colors"
+        >
+          <SkipForward className="h-3.5 w-3.5" />
+          Remplir manuellement
+        </button>
+        <button
+          onClick={runExtraction}
+          disabled={!file || isPending || !!confidence}
+          className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors ease-premium duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Analyse en cours…
+            </>
+          ) : confidence ? (
+            <>
+              <CheckCircle2 className="h-4 w-4" />
+              Terminé
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4" />
+              Lancer l&apos;analyse IA
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ================ AI BADGE FOR EXTRACTED FIELDS ================ */
+function AiBadge({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-md bg-gold-500/10 border border-gold-300/40 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-gold-700"
+      title="Pré-rempli par l'IA — vérifie et corrige si besoin"
+    >
+      <Sparkles className="h-2.5 w-2.5" strokeWidth={2.5} />
+      IA
+    </span>
+  );
+}
+
+/* ================ RECAP ROW ================ */
+function RecapRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-2 border-b border-forest-100/50 last:border-0">
+      <span className="text-xs font-mono uppercase tracking-wider text-ink-400">
+        {label}
+      </span>
+      <span className="text-sm font-body text-ink-900 text-right">{value || "—"}</span>
+    </div>
+  );
+}
+
+/* ================ MAIN ================ */
+export default function NewMissionPage() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState<FormState>(emptyForm);
+  const [aiFields, setAiFields] = useState<Set<string>>(new Set());
+
+  const update = (key: keyof FormState, value: string | number) => {
     setFormData((d) => ({ ...d, [key]: value }));
+    // Si l'user édite un champ IA, on retire le badge
+    if (aiFields.has(key as string)) {
+      setAiFields((prev) => {
+        const next = new Set(prev);
+        next.delete(key as string);
+        return next;
+      });
+    }
+  };
+
+  const isAi = (field: string) => aiFields.has(field);
+
+  const handleExtracted = (filled: FormState, fields: string[]) => {
+    setFormData(filled);
+    setAiFields(new Set(fields));
+    setCurrentStep(1);
+  };
+
+  const handleSkip = () => {
+    setCurrentStep(1);
+  };
 
   return (
     <>
       <Topbar title="Nouvelle mission" description="Création d'un chantier" />
 
       <div className="px-6 lg:px-8 py-6 max-w-4xl mx-auto space-y-6">
-        {/* Back link */}
         <Link
           href="/installer/missions"
           className="inline-flex items-center gap-1.5 text-xs font-body text-ink-500 hover:text-ink-700 transition-colors"
@@ -77,24 +401,28 @@ export default function NewMissionPage() {
 
         {/* Stepper */}
         <div className="rounded-xl border border-forest-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between overflow-x-auto">
             {steps.map((step, i) => {
               const isActive = currentStep === step.id;
               const isDone = currentStep > step.id;
               return (
-                <div key={step.id} className="flex items-center flex-1">
-                  <div className="flex items-center gap-3">
+                <div key={step.id} className="flex items-center flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <div
                       className={`h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                         isDone
                           ? "bg-forest-500 text-cream-50"
                           : isActive
-                          ? "bg-gold-500 text-forest-900"
+                          ? step.id === 0
+                            ? "bg-gold-500 text-forest-900"
+                            : "bg-gold-500 text-forest-900"
                           : "bg-cream-100 text-ink-400"
                       }`}
                     >
                       {isDone ? (
                         <Check className="h-4 w-4" strokeWidth={2.5} />
+                      ) : step.id === 0 && isActive ? (
+                        <Sparkles className="h-4 w-4" strokeWidth={2} />
                       ) : (
                         <span className="text-xs font-mono font-semibold">
                           {step.id}
@@ -102,7 +430,7 @@ export default function NewMissionPage() {
                       )}
                     </div>
                     <span
-                      className={`text-xs font-body font-medium hidden md:inline ${
+                      className={`text-xs font-body font-medium hidden md:inline whitespace-nowrap ${
                         isActive
                           ? "text-forest-600"
                           : isDone
@@ -115,7 +443,7 @@ export default function NewMissionPage() {
                   </div>
                   {i < steps.length - 1 && (
                     <div
-                      className={`flex-1 h-px mx-3 ${
+                      className={`flex-1 h-px mx-3 min-w-4 ${
                         isDone ? "bg-forest-500" : "bg-cream-200"
                       }`}
                     />
@@ -128,6 +456,10 @@ export default function NewMissionPage() {
 
         {/* Form step */}
         <div className="rounded-xl border border-forest-100 bg-white p-6 shadow-sm">
+          {currentStep === 0 && (
+            <DevisUploadStep onExtracted={handleExtracted} onSkip={handleSkip} />
+          )}
+
           {currentStep === 1 && (
             <div className="space-y-5">
               <div>
@@ -140,8 +472,9 @@ export default function NewMissionPage() {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Prénom *
+                    <AiBadge show={isAi("client_first_name")} />
                   </Label>
                   <Input
                     value={formData.client_first_name}
@@ -151,8 +484,9 @@ export default function NewMissionPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Nom *
+                    <AiBadge show={isAi("client_last_name")} />
                   </Label>
                   <Input
                     value={formData.client_last_name}
@@ -162,8 +496,9 @@ export default function NewMissionPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Email
+                    <AiBadge show={isAi("client_email")} />
                   </Label>
                   <Input
                     type="email"
@@ -174,8 +509,9 @@ export default function NewMissionPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Téléphone
+                    <AiBadge show={isAi("client_phone")} />
                   </Label>
                   <Input
                     value={formData.client_phone}
@@ -184,10 +520,6 @@ export default function NewMissionPage() {
                     className="h-11 bg-cream-50 border-forest-100"
                   />
                 </div>
-              </div>
-              <div className="rounded-lg bg-forest-50 border border-forest-100 p-3 text-xs font-body text-ink-600">
-                Au moins un moyen de contact (email ou téléphone) est
-                obligatoire pour envoyer le lien de validation des créneaux.
               </div>
             </div>
           )}
@@ -204,8 +536,9 @@ export default function NewMissionPage() {
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Adresse *
+                    <AiBadge show={isAi("address")} />
                   </Label>
                   <Input
                     value={formData.address}
@@ -216,8 +549,9 @@ export default function NewMissionPage() {
                 </div>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2 md:col-span-2">
-                    <Label className="text-sm font-body font-medium text-ink-700">
+                    <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                       Ville *
+                      <AiBadge show={isAi("city")} />
                     </Label>
                     <Input
                       value={formData.city}
@@ -227,8 +561,9 @@ export default function NewMissionPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-body font-medium text-ink-700">
+                    <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                       Code postal *
+                      <AiBadge show={isAi("postal_code")} />
                     </Label>
                     <Input
                       value={formData.postal_code}
@@ -255,8 +590,9 @@ export default function NewMissionPage() {
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Type de chantier *
+                    <AiBadge show={isAi("type")} />
                   </Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {missionTypes.map((t) => (
@@ -276,8 +612,9 @@ export default function NewMissionPage() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-body font-medium text-ink-700">
+                    <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                       Modèle / référence
+                      <AiBadge show={isAi("equipment")} />
                     </Label>
                     <Input
                       value={formData.equipment}
@@ -287,8 +624,9 @@ export default function NewMissionPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-body font-medium text-ink-700">
+                    <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                       Marque
+                      <AiBadge show={isAi("equipment_brand")} />
                     </Label>
                     <Input
                       value={formData.equipment_brand}
@@ -299,8 +637,9 @@ export default function NewMissionPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Notes pour l&apos;artisan
+                    <AiBadge show={isAi("notes")} />
                   </Label>
                   <Textarea
                     value={formData.notes}
@@ -325,8 +664,9 @@ export default function NewMissionPage() {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Montant HT (€) *
+                    <AiBadge show={isAi("amount_ht")} />
                   </Label>
                   <Input
                     type="number"
@@ -337,8 +677,9 @@ export default function NewMissionPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Montant TTC (€)
+                    <AiBadge show={isAi("amount_ttc")} />
                   </Label>
                   <Input
                     type="number"
@@ -349,30 +690,25 @@ export default function NewMissionPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-body font-medium text-ink-700">
-                    <Calendar className="inline h-3 w-3 mr-1" />
+                  <Label className="flex items-center gap-2 text-sm font-body font-medium text-ink-700">
                     Date de début souhaitée
+                    <AiBadge show={isAi("preferred_start_date")} />
                   </Label>
                   <Input
                     type="date"
                     value={formData.preferred_start_date}
-                    onChange={(e) =>
-                      update("preferred_start_date", e.target.value)
-                    }
+                    onChange={(e) => update("preferred_start_date", e.target.value)}
                     className="h-11 bg-cream-50 border-forest-100"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-body font-medium text-ink-700">
-                    <Calendar className="inline h-3 w-3 mr-1" />
                     Date de fin souhaitée
                   </Label>
                   <Input
                     type="date"
                     value={formData.preferred_end_date}
-                    onChange={(e) =>
-                      update("preferred_end_date", e.target.value)
-                    }
+                    onChange={(e) => update("preferred_end_date", e.target.value)}
                     className="h-11 bg-cream-50 border-forest-100"
                   />
                 </div>
@@ -409,14 +745,9 @@ export default function NewMissionPage() {
                     3% du montant HT —{" "}
                     <span className="font-mono text-gold-700">
                       {formData.amount_ht
-                        ? `${(parseFloat(formData.amount_ht) * 0.03).toFixed(
-                            2
-                          )} €`
+                        ? `${(parseFloat(formData.amount_ht) * 0.03).toFixed(2)} €`
                         : "—"}
                     </span>
-                    <br />
-                    Prélevé automatiquement lors du reversement au sous-traitant
-                    après exécution du chantier.
                   </div>
                 </div>
               </div>
@@ -433,6 +764,14 @@ export default function NewMissionPage() {
                   Vérifie les infos avant publication sur la marketplace
                 </p>
               </div>
+              {aiFields.size > 0 && (
+                <div className="rounded-lg bg-gold-500/5 border border-gold-300/30 p-3 flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-gold-600" strokeWidth={2} />
+                  <span className="text-xs font-body text-ink-700">
+                    {aiFields.size} champs pré-remplis par l&apos;IA — vérifiés et validés par toi.
+                  </span>
+                </div>
+              )}
               <div className="space-y-3">
                 <RecapRow
                   label="Client"
@@ -440,9 +779,7 @@ export default function NewMissionPage() {
                 />
                 <RecapRow
                   label="Contact"
-                  value={`${formData.client_email ?? "—"} · ${
-                    formData.client_phone ?? "—"
-                  }`}
+                  value={`${formData.client_email || "—"} · ${formData.client_phone || "—"}`}
                 />
                 <RecapRow
                   label="Adresse"
@@ -450,16 +787,11 @@ export default function NewMissionPage() {
                 />
                 <RecapRow
                   label="Type"
-                  value={
-                    missionTypes.find((t) => t.value === formData.type)
-                      ?.label ?? "—"
-                  }
+                  value={missionTypes.find((t) => t.value === formData.type)?.label ?? "—"}
                 />
                 <RecapRow
                   label="Équipement"
-                  value={`${formData.equipment_brand ?? ""} ${
-                    formData.equipment ?? ""
-                  }`.trim() || "—"}
+                  value={`${formData.equipment_brand} ${formData.equipment}`.trim() || "—"}
                 />
                 <RecapRow
                   label="Montant HT"
@@ -471,9 +803,7 @@ export default function NewMissionPage() {
                 />
                 <RecapRow
                   label="Dates souhaitées"
-                  value={`${formData.preferred_start_date || "—"} → ${
-                    formData.preferred_end_date || "—"
-                  }`}
+                  value={`${formData.preferred_start_date || "—"} → ${formData.preferred_end_date || "—"}`}
                 />
               </div>
             </div>
@@ -481,43 +811,34 @@ export default function NewMissionPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-            disabled={currentStep === 1}
-            className="inline-flex items-center gap-2 rounded-lg border border-forest-100 bg-white px-4 py-2.5 text-sm font-body text-ink-600 hover:border-forest-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Précédent
-          </button>
-
-          {currentStep < 5 ? (
+        {currentStep > 0 && (
+          <div className="flex items-center justify-between">
             <button
-              onClick={() => setCurrentStep(currentStep + 1)}
-              className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors ease-premium duration-300"
+              onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+              disabled={currentStep === 1}
+              className="inline-flex items-center gap-2 rounded-lg border border-forest-100 bg-white px-4 py-2.5 text-sm font-body text-ink-600 hover:border-forest-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Suivant
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Précédent
             </button>
-          ) : (
-            <button className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors ease-premium duration-300">
-              <FileText className="h-4 w-4" />
-              Publier sur la marketplace
-            </button>
-          )}
-        </div>
+
+            {currentStep < 5 ? (
+              <button
+                onClick={() => setCurrentStep(currentStep + 1)}
+                className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors"
+              >
+                Suivant
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <button className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors">
+                <Save className="h-4 w-4" />
+                Publier sur la marketplace
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
-  );
-}
-
-function RecapRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-2 border-b border-forest-100/50 last:border-0">
-      <span className="text-xs font-mono uppercase tracking-wider text-ink-400">
-        {label}
-      </span>
-      <span className="text-sm font-body text-ink-900 text-right">{value}</span>
-    </div>
   );
 }
