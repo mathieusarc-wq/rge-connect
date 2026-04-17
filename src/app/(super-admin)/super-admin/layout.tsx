@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Shield, Key, Database, Users, LogOut, Home } from "lucide-react";
+import { Shield, Key, Database, Users, Home, LayoutDashboard, ScrollText } from "lucide-react";
 
 export default async function SuperAdminLayout({
   children,
@@ -41,25 +41,39 @@ export default async function SuperAdminLayout({
             </Link>
             <nav className="flex items-center gap-1 ml-4">
               <Link
-                href="/super-admin/api-keys"
+                href="/super-admin"
                 className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100 hover:bg-cream-50/10 transition-colors"
               >
-                <Key className="h-3.5 w-3.5" strokeWidth={1.8} />
-                Clés API
+                <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={1.8} />
+                Vue d&apos;ensemble
               </Link>
               <Link
                 href="/super-admin/users"
-                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100/60 hover:bg-cream-50/10 transition-colors"
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100 hover:bg-cream-50/10 transition-colors"
               >
                 <Users className="h-3.5 w-3.5" strokeWidth={1.8} />
                 Utilisateurs
               </Link>
               <Link
                 href="/super-admin/data"
-                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100/60 hover:bg-cream-50/10 transition-colors"
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100 hover:bg-cream-50/10 transition-colors"
               >
                 <Database className="h-3.5 w-3.5" strokeWidth={1.8} />
                 Données
+              </Link>
+              <Link
+                href="/super-admin/audit"
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100 hover:bg-cream-50/10 transition-colors"
+              >
+                <ScrollText className="h-3.5 w-3.5" strokeWidth={1.8} />
+                Audit
+              </Link>
+              <Link
+                href="/super-admin/api-keys"
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-body text-cream-100 hover:bg-cream-50/10 transition-colors"
+              >
+                <Key className="h-3.5 w-3.5" strokeWidth={1.8} />
+                Clés API
               </Link>
             </nav>
           </div>
