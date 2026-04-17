@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -17,10 +17,13 @@ import {
   FileCheck,
   Shield,
   Star,
+  Search,
+  CheckCircle2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUpInstallerAction } from "./actions";
+import { lookupSiret, type SiretLookupResult } from "@/lib/insee/lookup-siret";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -65,6 +68,10 @@ export default function InstallerRegisterForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string>("business");
+  const [siretState, setSiretState] = useState<{
+    status: "idle" | "loading" | "success" | "error";
+    result?: SiretLookupResult;
+  }>({ status: "idle" });
 
   const [form, setForm] = useState({
     first_name: "",
@@ -82,6 +89,29 @@ export default function InstallerRegisterForm() {
 
   const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // Auto-lookup SIRET via API INSEE (debounced 400ms)
+  useEffect(() => {
+    if (form.siret.length !== 14 || !/^\d{14}$/.test(form.siret)) {
+      setSiretState({ status: "idle" });
+      return;
+    }
+    setSiretState({ status: "loading" });
+    const timer = setTimeout(async () => {
+      const result = await lookupSiret(form.siret);
+      setSiretState({ status: result.success ? "success" : "error", result });
+      if (result.success) {
+        setForm((f) => ({
+          ...f,
+          company_name: f.company_name || result.data.company_name,
+          address: f.address || result.data.address,
+          city: f.city || result.data.city,
+          postal_code: f.postal_code || result.data.postal_code,
+        }));
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [form.siret]);
 
   const canAdvance = () => {
     if (currentStep === 1) {
@@ -290,13 +320,36 @@ export default function InstallerRegisterForm() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-body font-medium text-ink-700">SIRET *</Label>
-                <Input
-                  inputMode="numeric"
-                  value={form.siret}
-                  onChange={(e) => update("siret", e.target.value.replace(/\D/g, "").slice(0, 14))}
-                  placeholder="14 chiffres"
-                  className="h-11 bg-cream-50 border-forest-100 font-mono"
-                />
+                <div className="relative">
+                  <Input
+                    inputMode="numeric"
+                    value={form.siret}
+                    onChange={(e) => update("siret", e.target.value.replace(/\D/g, "").slice(0, 14))}
+                    placeholder="14 chiffres — lookup auto INSEE"
+                    className={`h-11 bg-cream-50 border-forest-100 font-mono pr-10 ${
+                      siretState.status === "success"
+                        ? "border-forest-500"
+                        : siretState.status === "error"
+                        ? "border-red-300"
+                        : ""
+                    }`}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                    {siretState.status === "loading" && (
+                      <Loader2 className="h-4 w-4 text-forest-500 animate-spin" />
+                    )}
+                    {siretState.status === "success" && (
+                      <CheckCircle2 className="h-4 w-4 text-forest-500" strokeWidth={2} />
+                    )}
+                    {siretState.status === "error" && (
+                      <AlertCircle className="h-4 w-4 text-red-500" strokeWidth={2} />
+                    )}
+                    {siretState.status === "idle" && form.siret.length < 14 && (
+                      <Search className="h-4 w-4 text-ink-300" strokeWidth={1.8} />
+                    )}
+                  </div>
+                </div>
+                <InstallerSiretFeedback state={siretState} />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-body font-medium text-ink-700">Téléphone *</Label>
@@ -528,6 +581,38 @@ export default function InstallerRegisterForm() {
       </div>
     </div>
   );
+}
+
+function InstallerSiretFeedback({
+  state,
+}: {
+  state: {
+    status: "idle" | "loading" | "success" | "error";
+    result?: SiretLookupResult;
+  };
+}) {
+  if (state.status === "success" && state.result?.success) {
+    const d = state.result.data;
+    return (
+      <div className="space-y-1 mt-1">
+        <div className="flex items-center gap-2 text-xs font-body text-forest-600">
+          <CheckCircle2 className="h-3 w-3" strokeWidth={2.5} />
+          <span className="font-semibold">{d.company_name}</span>
+        </div>
+        <p className="text-[11px] font-body text-ink-500">
+          {d.activity_code} · {d.activity_label}
+        </p>
+      </div>
+    );
+  }
+  if (state.status === "error" && state.result && !state.result.success) {
+    return (
+      <p className="text-xs font-body text-red-600 mt-1">
+        {state.result.error}
+      </p>
+    );
+  }
+  return null;
 }
 
 function scorePassword(pwd: string): { score: number; label: string; color: string } {
