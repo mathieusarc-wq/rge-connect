@@ -313,103 +313,140 @@ export default function SubcontractorRegisterForm() {
                 Ton entreprise
               </h2>
               <p className="text-sm font-body text-ink-500 mt-1">
-                Infos légales vérifiées via ton Kbis à l&apos;étape suivante
+                Saisis ton SIRET et on récupère toutes tes infos depuis le registre officiel INSEE
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-body font-medium text-ink-700">Raison sociale *</Label>
-              <Input
-                value={form.company_name}
-                onChange={(e) => update("company_name", e.target.value)}
-                autoComplete="organization"
-                placeholder="Thermipro SARL"
-                className="h-11 bg-cream-50 border-forest-100"
-              />
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-body font-medium text-ink-700">SIRET *</Label>
-                <div className="relative">
-                  <Input
-                    inputMode="numeric"
-                    value={form.siret}
-                    onChange={(e) => update("siret", e.target.value.replace(/\D/g, "").slice(0, 14))}
-                    placeholder="14 chiffres — lookup auto INSEE"
-                    className={`h-11 bg-cream-50 border-forest-100 font-mono pr-10 ${
-                      siretState.status === "success"
-                        ? "border-forest-500"
-                        : siretState.status === "error"
-                        ? "border-red-300"
-                        : ""
-                    }`}
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
-                    {siretState.status === "loading" && (
-                      <Loader2 className="h-4 w-4 text-forest-500 animate-spin" />
-                    )}
-                    {siretState.status === "success" && (
-                      <CheckCircle2 className="h-4 w-4 text-forest-500" strokeWidth={2} />
-                    )}
-                    {siretState.status === "error" && (
-                      <AlertCircle className="h-4 w-4 text-red-500" strokeWidth={2} />
-                    )}
-                    {siretState.status === "idle" && form.siret.length < 14 && (
-                      <Search className="h-4 w-4 text-ink-300" strokeWidth={1.8} />
-                    )}
-                  </div>
-                </div>
-                <SiretFeedback state={siretState} />
+            {/* Hero SIRET lookup */}
+            <div className="rounded-xl border-2 border-gold-300/40 bg-gradient-to-br from-gold-500/5 to-forest-500/5 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-2.5 py-0.5">
+                  <Search className="h-3 w-3 text-forest-900" strokeWidth={2.5} />
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-forest-900 font-semibold">
+                    Auto-remplissage INSEE
+                  </span>
+                </span>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-body font-medium text-ink-700">Téléphone *</Label>
-                <Input
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
-                  placeholder="06 12 34 56 78"
-                  className="h-11 bg-cream-50 border-forest-100"
-                />
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-body font-medium text-ink-700">Adresse du siège *</Label>
-              <Input
-                value={form.address}
-                onChange={(e) => update("address", e.target.value)}
-                autoComplete="street-address"
-                placeholder="12 rue de la Paix"
-                className="h-11 bg-cream-50 border-forest-100"
-              />
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className="space-y-2 sm:col-span-2">
-                <Label className="text-sm font-body font-medium text-ink-700">Ville *</Label>
-                <Input
-                  value={form.city}
-                  onChange={(e) => update("city", e.target.value)}
-                  autoComplete="address-level2"
-                  placeholder="Lyon"
-                  className="h-11 bg-cream-50 border-forest-100"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-body font-medium text-ink-700">Code postal *</Label>
+              <Label className="text-base font-body font-semibold text-ink-900 mb-2 block">
+                Quel est ton numéro SIRET ?
+              </Label>
+              <div className="relative">
                 <Input
                   inputMode="numeric"
-                  autoComplete="postal-code"
-                  value={form.postal_code}
-                  onChange={(e) => update("postal_code", e.target.value.replace(/\D/g, "").slice(0, 5))}
-                  placeholder="69003"
-                  className="h-11 bg-cream-50 border-forest-100 font-mono"
+                  autoFocus
+                  value={form.siret}
+                  onChange={(e) => update("siret", e.target.value.replace(/\D/g, "").slice(0, 14))}
+                  placeholder="1 2 3 4 5 6 7 8 9 0 0 0 1 2"
+                  className={`h-14 bg-white border-2 text-lg font-mono tracking-widest pr-12 ${
+                    siretState.status === "success"
+                      ? "border-forest-500"
+                      : siretState.status === "error"
+                      ? "border-red-300"
+                      : "border-forest-100"
+                  }`}
                 />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+                  {siretState.status === "loading" && (
+                    <Loader2 className="h-5 w-5 text-forest-500 animate-spin" />
+                  )}
+                  {siretState.status === "success" && (
+                    <CheckCircle2 className="h-5 w-5 text-forest-500" strokeWidth={2} />
+                  )}
+                  {siretState.status === "error" && (
+                    <AlertCircle className="h-5 w-5 text-red-500" strokeWidth={2} />
+                  )}
+                  {siretState.status === "idle" && (
+                    <Search className="h-5 w-5 text-ink-300" strokeWidth={1.8} />
+                  )}
+                </div>
               </div>
+              <p className="text-xs font-body text-ink-500 mt-2">
+                14 chiffres · on vérifie l&apos;existence et le statut de ton entreprise
+              </p>
+              <SiretFeedback state={siretState} />
             </div>
+
+            {/* Récupération des infos après lookup réussi */}
+            {siretState.status === "success" && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="h-6 w-6 rounded-full bg-forest-500 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-cream-50" strokeWidth={2.5} />
+                  </div>
+                  <h3 className="text-sm font-display font-bold text-ink-900">
+                    Infos récupérées — vérifie et complète
+                  </h3>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-body font-medium text-ink-700">
+                    Raison sociale *
+                  </Label>
+                  <Input
+                    value={form.company_name}
+                    onChange={(e) => update("company_name", e.target.value)}
+                    autoComplete="organization"
+                    placeholder="Thermipro SARL"
+                    className="h-11 bg-cream-50 border-forest-100"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-body font-medium text-ink-700">
+                    Adresse du siège *
+                  </Label>
+                  <Input
+                    value={form.address}
+                    onChange={(e) => update("address", e.target.value)}
+                    autoComplete="street-address"
+                    placeholder="12 rue de la Paix"
+                    className="h-11 bg-cream-50 border-forest-100"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label className="text-sm font-body font-medium text-ink-700">Ville *</Label>
+                    <Input
+                      value={form.city}
+                      onChange={(e) => update("city", e.target.value)}
+                      autoComplete="address-level2"
+                      placeholder="Lyon"
+                      className="h-11 bg-cream-50 border-forest-100"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-body font-medium text-ink-700">
+                      Code postal *
+                    </Label>
+                    <Input
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      value={form.postal_code}
+                      onChange={(e) => update("postal_code", e.target.value.replace(/\D/g, "").slice(0, 5))}
+                      placeholder="69003"
+                      className="h-11 bg-cream-50 border-forest-100 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-body font-medium text-ink-700">
+                    Téléphone professionnel *
+                  </Label>
+                  <Input
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    placeholder="06 12 34 56 78"
+                    className="h-11 bg-cream-50 border-forest-100"
+                  />
+                </div>
+              </div>
+            )}
           </>
         )}
 
