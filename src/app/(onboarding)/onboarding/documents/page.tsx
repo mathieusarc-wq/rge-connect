@@ -6,7 +6,26 @@ export const metadata = {
   title: "Upload tes documents — RGE Connect",
 };
 
-export default async function OnboardingDocumentsPage() {
+interface PageProps {
+  searchParams: Promise<{ demo?: string; role?: string }>;
+}
+
+export default async function OnboardingDocumentsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  // Mode démo : affichage sans auth pour validation visuelle
+  if (params.demo === "1") {
+    const role = params.role === "installer" ? "installer" : "subcontractor";
+    return (
+      <OnboardingClient
+        role={role}
+        firstName="Thomas"
+        qualifications={role === "subcontractor" ? ["QualiPac", "QualiPV"] : []}
+        existingDocs={[]}
+      />
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
