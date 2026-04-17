@@ -12,39 +12,43 @@ import {
   Settings,
   ChevronLeft,
   LogOut,
+  ClipboardList,
+  Users,
+  Code2,
+  ShoppingCart,
+  ArrowLeftRight,
 } from "lucide-react";
 
-const navItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Marketplace",
-    href: "/marketplace",
-    icon: Store,
-  },
-  {
-    label: "Documents",
-    href: "/documents",
-    icon: FolderLock,
-  },
-  {
-    label: "Paiements",
-    href: "/payments",
-    icon: CreditCard,
-  },
-  {
-    label: "Avis",
-    href: "/reviews",
-    icon: Star,
-  },
+type NavItem = {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+};
+
+const subcontractorNav: NavItem[] = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Marketplace", href: "/marketplace", icon: Store },
+  { label: "Documents", href: "/documents", icon: FolderLock },
+  { label: "Paiements", href: "/payments", icon: CreditCard },
+  { label: "Avis", href: "/reviews", icon: Star },
+];
+
+const installerNav: NavItem[] = [
+  { label: "Dashboard", href: "/installer/dashboard", icon: LayoutDashboard },
+  { label: "Missions", href: "/installer/missions", icon: ClipboardList },
+  { label: "Sous-traitants", href: "/installer/subcontractors", icon: Users },
+  { label: "API & Webhooks", href: "/installer/api", icon: Code2 },
+  { label: "Paiements", href: "/installer/payments", icon: CreditCard },
+  { label: "Catalogue", href: "/installer/catalog", icon: ShoppingCart },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  const isInstallerView = pathname.startsWith("/installer");
+  const navItems = isInstallerView ? installerNav : subcontractorNav;
+  const settingsHref = isInstallerView ? "/installer/settings" : "/settings";
 
   return (
     <aside
@@ -55,7 +59,10 @@ export function Sidebar() {
       {/* Header */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-forest-100">
         {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-0">
+          <Link
+            href={isInstallerView ? "/installer/dashboard" : "/dashboard"}
+            className="flex items-center gap-0"
+          >
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
               RGE&nbsp;C
             </span>
@@ -81,10 +88,31 @@ export function Sidebar() {
         </button>
       </div>
 
+      {/* Role switcher (démo) */}
+      {!collapsed && (
+        <div className="px-3 pt-3">
+          <Link
+            href={isInstallerView ? "/dashboard" : "/installer/dashboard"}
+            className="flex items-center justify-between rounded-lg bg-cream-100 border border-forest-100 px-3 py-2 text-xs font-body transition-colors hover:bg-cream-200"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-ink-400 uppercase tracking-wider">
+                Vue
+              </span>
+              <span className="font-semibold text-forest-600">
+                {isInstallerView ? "Installateur" : "Sous-traitant"}
+              </span>
+            </div>
+            <ArrowLeftRight className="h-3.5 w-3.5 text-ink-400" strokeWidth={1.8} />
+          </Link>
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
@@ -113,9 +141,9 @@ export function Sidebar() {
       {/* Bottom */}
       <div className="px-3 py-4 border-t border-forest-100 space-y-1">
         <Link
-          href="/settings"
+          href={settingsHref}
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-body font-medium transition-all duration-200 group ${
-            pathname.startsWith("/settings")
+            pathname.startsWith(settingsHref)
               ? "bg-forest-50 text-forest-600"
               : "text-ink-500 hover:bg-cream-50 hover:text-ink-700"
           } ${collapsed ? "justify-center px-0" : ""}`}
@@ -123,7 +151,7 @@ export function Sidebar() {
         >
           <Settings
             className={`h-[18px] w-[18px] flex-shrink-0 ${
-              pathname.startsWith("/settings")
+              pathname.startsWith(settingsHref)
                 ? "text-forest-500"
                 : "text-ink-400 group-hover:text-ink-600"
             }`}
@@ -132,22 +160,24 @@ export function Sidebar() {
           {!collapsed && <span>Paramètres</span>}
         </Link>
 
-        {/* User + logout */}
+        {/* User card */}
         <div
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 mt-2 ${
             collapsed ? "justify-center px-0" : ""
           }`}
         >
           <div className="h-8 w-8 rounded-full bg-forest-500 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-body font-semibold text-cream-50">TP</span>
+            <span className="text-xs font-body font-semibold text-cream-50">
+              {isInstallerView ? "LM" : "TP"}
+            </span>
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-body font-medium text-ink-900 truncate">
-                Thermipro SARL
+                {isInstallerView ? "LM Energy" : "Thermipro SARL"}
               </p>
               <p className="text-xs font-body text-ink-400 truncate">
-                Sous-traitant RGE
+                {isInstallerView ? "Installateur · Business" : "Sous-traitant RGE"}
               </p>
             </div>
           )}
