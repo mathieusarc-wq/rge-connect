@@ -30,10 +30,30 @@ const QUALIFICATIONS = [
   { id: "QualiPac", label: "QualiPac", description: "PAC air-eau et air-air" },
   { id: "QualiPV", label: "QualiPV", description: "Photovoltaïque" },
   { id: "QualiBois", label: "QualiBois", description: "Chauffage bois" },
-  { id: "QualiSol", label: "QualiSol", description: "Solaire thermique" },
-  { id: "Climatisation", label: "Climatisation", description: "Certification clim" },
-  { id: "RGE_ITE", label: "RGE ITE", description: "Isolation thermique extérieur" },
-  { id: "RGE_Combles", label: "RGE Combles", description: "Isolation combles" },
+  { id: "QualiSolCESI", label: "QualiSol CESI", description: "Chauffe-eau solaire individuel" },
+  { id: "QualiSolSSC", label: "QualiSol SSC", description: "Système solaire combiné" },
+  { id: "VentilationPlus", label: "Ventilation+", description: "VMC simple et double flux" },
+  { id: "QualibatITE", label: "Qualibat ITE", description: "Isolation thermique par l'extérieur" },
+  { id: "QualibatITIComble", label: "Qualibat ITI Combles", description: "Isolation combles perdus" },
+  { id: "QualibatITIRampant", label: "Qualibat ITI Rampants", description: "Isolation sous rampants" },
+  { id: "QualibatITIMur", label: "Qualibat ITI Murs intérieurs", description: "Isolation par l'intérieur" },
+  { id: "QualibatMenuiserie", label: "Qualibat Menuiserie", description: "Fenêtres et portes" },
+];
+
+// Suggestions pour l'autocomplete du champ "Autre"
+const OTHER_SUGGESTIONS = [
+  "Qualibat Plomberie",
+  "Qualibat Génie climatique",
+  "Qualibat Chauffage urbain",
+  "Qualifelec RGE Photovoltaïque",
+  "Qualifelec IRVE",
+  "Qualifelec Mention ENR",
+  "Chauffage Plus",
+  "CPF Qualibois",
+  "Qualigaz",
+  "Qualisol Tertiaire",
+  "Qualipv Bâtiment",
+  "Cardonel",
 ];
 
 const steps: { id: Step; title: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }> }[] = [
@@ -69,9 +89,12 @@ export default function SubcontractorRegisterForm() {
     phone: "",
     // Step 3
     qualifications: [] as string[],
+    no_rge: false, // case "Aucune qualification RGE"
     // Step 4
     accept_terms: false,
   });
+  const [otherInput, setOtherInput] = useState("");
+  const [otherSuggestions, setOtherSuggestions] = useState<string[]>([]);
 
   const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -105,7 +128,47 @@ export default function SubcontractorRegisterForm() {
       qualifications: f.qualifications.includes(q)
         ? f.qualifications.filter((x) => x !== q)
         : [...f.qualifications, q],
+      no_rge: false, // cliquer sur une qualif désactive le "aucune"
     }));
+  };
+
+  const toggleNoRge = () => {
+    setForm((f) => ({
+      ...f,
+      no_rge: !f.no_rge,
+      qualifications: !f.no_rge ? [] : f.qualifications, // reset si on active "aucune"
+    }));
+    setOtherInput("");
+    setOtherSuggestions([]);
+  };
+
+  const addOther = (value: string) => {
+    const clean = value.trim();
+    if (!clean || form.qualifications.includes(clean)) return;
+    setForm((f) => ({
+      ...f,
+      qualifications: [...f.qualifications, clean],
+      no_rge: false,
+    }));
+    setOtherInput("");
+    setOtherSuggestions([]);
+  };
+
+  const onOtherChange = (v: string) => {
+    setOtherInput(v);
+    if (v.trim().length >= 2) {
+      const lower = v.toLowerCase();
+      setOtherSuggestions(
+        OTHER_SUGGESTIONS.filter(
+          (s) =>
+            s.toLowerCase().includes(lower) &&
+            !form.qualifications.includes(s) &&
+            !QUALIFICATIONS.some((q) => q.label === s)
+        ).slice(0, 5)
+      );
+    } else {
+      setOtherSuggestions([]);
+    }
   };
 
   const canAdvance = () => {
@@ -128,7 +191,7 @@ export default function SubcontractorRegisterForm() {
       );
     }
     if (currentStep === 3) {
-      return form.qualifications.length >= 1;
+      return form.no_rge || form.qualifications.length >= 1;
     }
     if (currentStep === 4) {
       return form.accept_terms;
@@ -462,7 +525,7 @@ export default function SubcontractorRegisterForm() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className={`grid sm:grid-cols-2 gap-3 ${form.no_rge ? "opacity-40 pointer-events-none" : ""}`}>
               {QUALIFICATIONS.map((q) => {
                 const selected = form.qualifications.includes(q.id);
                 return (
@@ -496,9 +559,100 @@ export default function SubcontractorRegisterForm() {
               })}
             </div>
 
-            <p className="text-xs font-body text-ink-500">
-              {form.qualifications.length} qualification{form.qualifications.length > 1 ? "s" : ""} sélectionnée{form.qualifications.length > 1 ? "s" : ""}
-            </p>
+            {/* Autre qualification — champ libre avec suggestions */}
+            <div className={`space-y-2 ${form.no_rge ? "opacity-40 pointer-events-none" : ""}`}>
+              <Label className="text-sm font-body font-medium text-ink-700">
+                Autre qualification
+              </Label>
+              <div className="relative">
+                <Input
+                  value={otherInput}
+                  onChange={(e) => onOtherChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addOther(otherInput);
+                    }
+                  }}
+                  placeholder="Tape le nom, ex : Qualifelec, Qualigaz..."
+                  className="h-11 bg-cream-50 border-forest-100 pr-24"
+                />
+                {otherInput.trim().length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => addOther(otherInput)}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-forest-500 px-3 py-1.5 text-xs font-body font-semibold text-cream-50 hover:bg-forest-600"
+                  >
+                    Ajouter
+                  </button>
+                )}
+              </div>
+              {otherSuggestions.length > 0 && (
+                <div className="rounded-lg border border-forest-100 bg-white shadow-sm overflow-hidden">
+                  {otherSuggestions.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => addOther(s)}
+                      className="w-full text-left px-3 py-2 text-sm font-body text-ink-700 hover:bg-cream-50 border-b border-forest-100/50 last:border-0 flex items-center justify-between"
+                    >
+                      <span>{s}</span>
+                      <span className="text-xs font-mono text-forest-500">+ Ajouter</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Tags des qualifications custom ajoutées (pas dans la liste principale) */}
+            {form.qualifications.filter((q) => !QUALIFICATIONS.some((Q) => Q.id === q)).length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {form.qualifications
+                  .filter((q) => !QUALIFICATIONS.some((Q) => Q.id === q))
+                  .map((q) => (
+                    <span
+                      key={q}
+                      className="inline-flex items-center gap-1.5 rounded-md bg-forest-50 border border-forest-100 px-2 py-1 text-xs font-mono text-forest-700"
+                    >
+                      {q}
+                      <button
+                        type="button"
+                        onClick={() => toggleQualification(q)}
+                        className="text-forest-500 hover:text-red-500"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+              </div>
+            )}
+
+            {/* Séparateur + checkbox "Aucune qualification" */}
+            <div className="pt-2 border-t border-forest-100">
+              <label className="flex items-start gap-3 cursor-pointer rounded-lg p-3 hover:bg-cream-50 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={form.no_rge}
+                  onChange={toggleNoRge}
+                  className="h-4 w-4 rounded border-forest-300 text-forest-500 focus:ring-forest-500/20 mt-0.5 flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-body font-medium text-ink-900">
+                    Je n&apos;ai pas encore de qualification RGE
+                  </p>
+                  <p className="text-xs font-body text-ink-500 mt-0.5">
+                    Tu peux quand même t&apos;inscrire. Tu auras accès aux missions ne nécessitant pas de qualification spécifique.
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {/* Compteur */}
+            {!form.no_rge && (
+              <p className="text-xs font-body text-ink-500">
+                {form.qualifications.length} qualification{form.qualifications.length > 1 ? "s" : ""} sélectionnée{form.qualifications.length > 1 ? "s" : ""}
+              </p>
+            )}
           </>
         )}
 
@@ -528,13 +682,25 @@ export default function SubcontractorRegisterForm() {
               </RecapSection>
 
               <RecapSection title="Qualifications">
-                <div className="flex flex-wrap gap-2">
-                  {form.qualifications.map((q) => (
-                    <span key={q} className="inline-flex items-center rounded-md bg-forest-50 border border-forest-100 px-2 py-0.5 text-xs font-mono text-forest-600">
-                      {q}
-                    </span>
-                  ))}
-                </div>
+                {form.no_rge ? (
+                  <p className="text-sm font-body italic text-ink-500">
+                    Aucune qualification RGE déclarée
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {form.qualifications.map((q) => {
+                      const known = QUALIFICATIONS.find((Q) => Q.id === q);
+                      return (
+                        <span
+                          key={q}
+                          className="inline-flex items-center rounded-md bg-forest-50 border border-forest-100 px-2 py-0.5 text-xs font-mono text-forest-600"
+                        >
+                          {known?.label ?? q}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </RecapSection>
             </div>
 
