@@ -19,6 +19,7 @@ import {
   Star,
   Search,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,30 +28,80 @@ import { lookupSiret, type SiretLookupResult } from "@/lib/insee/lookup-siret";
 
 type Step = 1 | 2 | 3 | 4;
 
-const PLANS = [
+type Plan = {
+  id: string;
+  name: string;
+  price: string;
+  original_price?: string;
+  badge?: string;
+  badge_accent?: "gold" | "forest";
+  description: string;
+  commission: string;
+  features: string[];
+  recommended: boolean;
+  highlight?: boolean;
+};
+
+const PLANS: Plan[] = [
   {
     id: "discovery",
     name: "Découverte",
     price: "0",
-    description: "3 chantiers par mois max, sans engagement",
-    commission: "3% fixe",
+    description: "Pour tester la plateforme sans engagement",
+    commission: "3% par chantier",
     recommended: false,
+    features: [
+      "3 missions par mois maximum",
+      "Marketplace d'artisans RGE certifiés",
+      "Matching automatique par zone et métier",
+      "Séquestre de paiement Mangopay",
+      "Dashboard basique",
+      "Support par email",
+    ],
   },
   {
     id: "business",
     name: "Business",
-    price: "199",
-    description: "Chantiers illimités, API, garantie, dashboard",
-    commission: "3% fixe",
+    price: "0",
+    original_price: "199",
+    badge: "Offre de lancement · 10 premiers inscrits",
+    badge_accent: "gold",
+    description: "La totalité de la plateforme, sans limite",
+    commission: "3% par chantier",
     recommended: true,
+    highlight: true,
+    features: [
+      "Chantiers illimités",
+      "API + intégration CRM (webhooks HMAC)",
+      "Garantie chantier : remplacement sous 48h en cas de défaillance",
+      "SAV unique RGE Connect (gestion des litiges centralisée)",
+      "Dashboard + reporting complet (KPIs, export CSV)",
+      "Centrale d'achat fournisseurs négociés (HEIWA, Daikin, Atlantic, Weber) jusqu'à -20%",
+      "Photos horodatées eIDAS + PV électronique Yousign",
+      "Alertes automatiques (missions non assignées, webhooks échec, paiements)",
+      "Avis clients automatiques J+1 via Brevo",
+      "Republication automatique des avis sur Google Business Profile",
+      "Support prioritaire (réponse < 4h ouvrées)",
+    ],
   },
   {
     id: "enterprise",
     name: "Enterprise",
     price: "499",
-    description: "Tout Business + marque blanche + SLA 24/7",
-    commission: "3% fixe",
+    description: "Sur-mesure pour grands comptes et groupes",
+    commission: "3% par chantier",
     recommended: false,
+    features: [
+      "Tout ce qui est inclus dans Business",
+      "Marque blanche (nom de domaine + logo personnalisé)",
+      "Décennale parapluie en option (via courtier partenaire)",
+      "Account manager dédié (joignable en direct)",
+      "SLA 24/7 avec astreinte technique",
+      "Contrat personnalisable (conditions particulières)",
+      "Audit RGPD + sécurité semestriel",
+      "Rapports et exports sur mesure",
+      "Intégration API avancée (webhooks custom, endpoints dédiés)",
+    ],
   },
 ];
 
@@ -445,55 +496,109 @@ export default function InstallerRegisterForm() {
             <div>
               <h2 className="text-lg font-display font-bold text-ink-900">Choisis ton plan</h2>
               <p className="text-sm font-body text-ink-500 mt-1">
-                Tu peux changer de plan à tout moment. Commission 3% fixe par chantier pour tous les plans.
+                Commission unique <strong className="text-ink-900">3% par chantier</strong> pour tous les plans. Tu peux changer à tout moment.
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {PLANS.map((plan) => {
                 const selected = selectedPlan === plan.id;
+                const hasPromo = !!plan.original_price;
                 return (
                   <button
                     key={plan.id}
                     type="button"
                     onClick={() => setSelectedPlan(plan.id)}
-                    className={`w-full rounded-lg border-2 p-4 text-left transition-all relative ${
+                    className={`w-full rounded-xl border-2 p-5 text-left transition-all relative ${
                       selected
-                        ? "border-forest-500 bg-forest-50"
+                        ? plan.highlight
+                          ? "border-gold-500 bg-gradient-to-br from-gold-500/10 to-forest-500/5 shadow-md"
+                          : "border-forest-500 bg-forest-50"
+                        : plan.highlight
+                        ? "border-gold-300/60 bg-gradient-to-br from-gold-500/5 to-transparent hover:border-gold-400"
                         : "border-forest-100 bg-white hover:border-forest-200"
                     }`}
                   >
-                    {plan.recommended && (
-                      <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-full bg-gold-500 px-2.5 py-0.5">
-                        <Star className="h-3 w-3 text-forest-900" strokeWidth={2.5} />
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-forest-900 font-semibold">
-                          Recommandé
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-base font-display font-bold text-ink-900">
+                    {/* Badges haut-droite */}
+                    <div className="absolute -top-3 right-4 flex items-center gap-1.5">
+                      {plan.recommended && (
+                        <div className="inline-flex items-center gap-1 rounded-full bg-forest-500 px-2.5 py-0.5 shadow-sm">
+                          <Star className="h-3 w-3 text-cream-50" strokeWidth={2.5} />
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-cream-50 font-semibold">
+                            Recommandé
+                          </span>
+                        </div>
+                      )}
+                      {plan.badge && (
+                        <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 shadow-sm ${
+                          plan.badge_accent === "gold"
+                            ? "bg-gold-500 text-forest-900"
+                            : "bg-forest-500 text-cream-50"
+                        }`}>
+                          <Sparkles className="h-3 w-3" strokeWidth={2.5} />
+                          <span className="text-[10px] font-mono uppercase tracking-wider font-semibold">
+                            {plan.badge}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span className="text-lg font-display font-bold text-ink-900">
                             {plan.name}
                           </span>
-                          <span className="text-2xl font-display font-extrabold text-forest-600">
-                            {plan.price}€
+                          {hasPromo && (
+                            <span className="text-base font-body text-ink-400 line-through">
+                              {plan.original_price}€
+                            </span>
+                          )}
+                          <span className={`text-3xl font-display font-extrabold ${
+                            hasPromo ? "text-gold-600" : "text-forest-600"
+                          }`}>
+                            {plan.price === "0" ? "Gratuit" : `${plan.price}€`}
                           </span>
-                          <span className="text-xs font-body text-ink-500">/ mois</span>
+                          {plan.price !== "0" && (
+                            <span className="text-xs font-body text-ink-500">/ mois</span>
+                          )}
                         </div>
                         <p className="text-sm font-body text-ink-600 mt-1">
                           {plan.description}
                         </p>
-                        <p className="text-xs font-mono text-gold-700 mt-1.5">
-                          Commission {plan.commission}
-                        </p>
                       </div>
-                      {selected && (
-                        <div className="h-5 w-5 rounded-full bg-forest-500 flex items-center justify-center flex-shrink-0 mt-1">
-                          <Check className="h-3 w-3 text-cream-50" strokeWidth={3} />
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 transition-all ${
+                        selected
+                          ? "bg-forest-500 text-cream-50"
+                          : "bg-cream-100 text-transparent"
+                      }`}>
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                      </div>
+                    </div>
+
+                    {/* Features list */}
+                    <div className="space-y-1.5 pt-3 border-t border-forest-100/50">
+                      {plan.features.map((feature, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <Check
+                            className={`h-3.5 w-3.5 flex-shrink-0 mt-0.5 ${
+                              plan.highlight ? "text-gold-600" : "text-forest-500"
+                            }`}
+                            strokeWidth={2.5}
+                          />
+                          <span className="text-xs font-body text-ink-700 leading-relaxed">
+                            {feature}
+                          </span>
                         </div>
-                      )}
+                      ))}
+                    </div>
+
+                    {/* Footer commission */}
+                    <div className="mt-4 pt-3 border-t border-forest-100/50">
+                      <p className="text-xs font-mono text-ink-500">
+                        + Commission <span className="text-gold-700 font-semibold">{plan.commission}</span>
+                      </p>
                     </div>
                   </button>
                 );
@@ -501,7 +606,7 @@ export default function InstallerRegisterForm() {
             </div>
 
             <div className="rounded-lg bg-forest-50 border border-forest-100 p-3 text-xs font-body text-ink-600">
-              Pas de prélèvement tout de suite — tu commences par le plan Découverte gratuit et tu peux upgrader quand tu veux.
+              <strong className="text-ink-900">Pas de prélèvement maintenant.</strong> Tu as jusqu&apos;à ta première mission publiée pour finaliser ton choix de plan. Les 10 premières inscriptions au plan Business ne seront jamais facturées pendant la phase de lancement.
             </div>
           </>
         )}
