@@ -44,63 +44,29 @@ type Plan = {
 
 const PLANS: Plan[] = [
   {
-    id: "discovery",
-    name: "Découverte",
-    price: "0",
-    description: "Pour tester la plateforme sans engagement",
-    commission: "3% par chantier",
-    recommended: false,
-    features: [
-      "3 missions par mois maximum",
-      "Marketplace d'artisans RGE certifiés",
-      "Matching automatique par zone et métier",
-      "Séquestre de paiement Mangopay",
-      "Dashboard basique",
-      "Support par email",
-    ],
-  },
-  {
     id: "business",
     name: "Business",
     price: "0",
     original_price: "199",
     badge: "Offre de lancement · 10 premiers inscrits",
     badge_accent: "gold",
-    description: "La totalité de la plateforme, sans limite",
-    commission: "3% par chantier",
+    description: "Simple, efficace, sécurisé. Tout pour piloter vos chantiers.",
+    commission: "",
     recommended: true,
     highlight: true,
     features: [
-      "Chantiers illimités",
-      "API + intégration CRM (webhooks HMAC)",
-      "Garantie chantier : remplacement sous 48h en cas de défaillance",
-      "SAV unique RGE Connect (gestion des litiges centralisée)",
-      "Dashboard + reporting complet (KPIs, export CSV)",
-      "Centrale d'achat fournisseurs négociés (HEIWA, Daikin, Atlantic, Weber) jusqu'à -20%",
-      "Photos horodatées eIDAS + PV électronique Yousign",
-      "Alertes automatiques (missions non assignées, webhooks échec, paiements)",
-      "Avis clients automatiques J+1 via Brevo",
-      "Republication automatique des avis sur Google Business Profile",
-      "Support prioritaire (réponse < 4h ouvrées)",
-    ],
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: "499",
-    description: "Sur-mesure pour grands comptes et groupes",
-    commission: "3% par chantier",
-    recommended: false,
-    features: [
-      "Tout ce qui est inclus dans Business",
-      "Marque blanche (nom de domaine + logo personnalisé)",
-      "Décennale parapluie en option (via courtier partenaire)",
-      "Account manager dédié (joignable en direct)",
-      "SLA 24/7 avec astreinte technique",
-      "Contrat personnalisable (conditions particulières)",
-      "Audit RGPD + sécurité semestriel",
-      "Rapports et exports sur mesure",
-      "Intégration API avancée (webhooks custom, endpoints dédiés)",
+      "Analyse IA de vos devis — upload le PDF, on extrait tout automatiquement",
+      "Diffusion anonyme — votre chantier apparaît à votre tarif, sans votre identité",
+      "Ordre de mission automatisé — signé électroniquement dès acceptation",
+      "Paiement sécurisé — séquestre jusqu'à validation, prélèvement SEPA B2B J+15 / J+30 / J+45",
+      "Photos horodatées eIDAS — preuve à valeur juridique à chaque étape",
+      "PV de fin de chantier électronique — signé à distance par votre client",
+      "Avis client automatisé — collecté par email + SMS après la pose",
+      "Avis publié sur la fiche du sous-traitant — chaque artisan est noté par vos clients, vous êtes sûr de travailler avec les meilleurs de votre zone",
+      "Assurance décennale partenaire — tarif groupe négocié",
+      "Centrale d'achats — tarifs négociés jusqu'à -20%",
+      "Dashboard complet — suivi temps réel de tous vos chantiers",
+      "Support dédié — équipe RGE Connect joignable rapidement",
     ],
   },
 ];
@@ -494,119 +460,71 @@ export default function InstallerRegisterForm() {
         {currentStep === 3 && (
           <>
             <div>
-              <h2 className="text-lg font-display font-bold text-ink-900">Choisis ton plan</h2>
+              <h2 className="text-lg font-display font-bold text-ink-900">Ton plan</h2>
               <p className="text-sm font-body text-ink-500 mt-1">
-                Commission unique <strong className="text-ink-900">3% par chantier</strong> pour tous les plans. Tu peux changer à tout moment.
+                Tout inclus, sans engagement.
               </p>
             </div>
 
-            <div className="space-y-4">
-              {PLANS.map((plan) => {
-                const selected = selectedPlan === plan.id;
-                const hasPromo = !!plan.original_price;
-                return (
-                  <button
-                    key={plan.id}
-                    type="button"
-                    onClick={() => setSelectedPlan(plan.id)}
-                    className={`w-full rounded-xl border-2 p-5 text-left transition-all relative ${
-                      selected
-                        ? plan.highlight
-                          ? "border-gold-500 bg-gradient-to-br from-gold-500/10 to-forest-500/5 shadow-md"
-                          : "border-forest-500 bg-forest-50"
-                        : plan.highlight
-                        ? "border-gold-300/60 bg-gradient-to-br from-gold-500/5 to-transparent hover:border-gold-400"
-                        : "border-forest-100 bg-white hover:border-forest-200"
-                    }`}
-                  >
-                    {/* Badges haut-droite */}
-                    <div className="absolute -top-3 right-4 flex items-center gap-1.5">
-                      {plan.recommended && (
-                        <div className="inline-flex items-center gap-1 rounded-full bg-forest-500 px-2.5 py-0.5 shadow-sm">
-                          <Star className="h-3 w-3 text-cream-50" strokeWidth={2.5} />
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-cream-50 font-semibold">
-                            Recommandé
-                          </span>
-                        </div>
+            {PLANS.map((plan) => {
+              const hasPromo = !!plan.original_price;
+              return (
+                <div
+                  key={plan.id}
+                  className="w-full rounded-xl border-2 border-gold-500 bg-gradient-to-br from-gold-500/10 to-forest-500/5 p-6 shadow-md relative"
+                >
+                  {plan.badge && (
+                    <div className="absolute -top-3 left-4 inline-flex items-center gap-1 rounded-full bg-gold-500 px-3 py-1 shadow-sm">
+                      <Sparkles className="h-3 w-3 text-forest-900" strokeWidth={2.5} />
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-forest-900 font-semibold">
+                        {plan.badge}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Header */}
+                  <div className="mb-4">
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className="text-xl font-display font-bold text-ink-900">
+                        {plan.name}
+                      </span>
+                      {hasPromo && (
+                        <span className="text-lg font-body text-ink-400 line-through">
+                          {plan.original_price}€
+                        </span>
                       )}
-                      {plan.badge && (
-                        <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 shadow-sm ${
-                          plan.badge_accent === "gold"
-                            ? "bg-gold-500 text-forest-900"
-                            : "bg-forest-500 text-cream-50"
-                        }`}>
-                          <Sparkles className="h-3 w-3" strokeWidth={2.5} />
-                          <span className="text-[10px] font-mono uppercase tracking-wider font-semibold">
-                            {plan.badge}
-                          </span>
-                        </div>
+                      <span className="text-4xl font-display font-extrabold text-gold-600">
+                        {plan.price === "0" ? "Gratuit" : `${plan.price}€`}
+                      </span>
+                      {plan.price !== "0" && (
+                        <span className="text-xs font-body text-ink-500">/ mois</span>
                       )}
                     </div>
+                    <p className="text-sm font-body text-ink-700 mt-2">
+                      {plan.description}
+                    </p>
+                  </div>
 
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2 flex-wrap">
-                          <span className="text-lg font-display font-bold text-ink-900">
-                            {plan.name}
-                          </span>
-                          {hasPromo && (
-                            <span className="text-base font-body text-ink-400 line-through">
-                              {plan.original_price}€
-                            </span>
-                          )}
-                          <span className={`text-3xl font-display font-extrabold ${
-                            hasPromo ? "text-gold-600" : "text-forest-600"
-                          }`}>
-                            {plan.price === "0" ? "Gratuit" : `${plan.price}€`}
-                          </span>
-                          {plan.price !== "0" && (
-                            <span className="text-xs font-body text-ink-500">/ mois</span>
-                          )}
-                        </div>
-                        <p className="text-sm font-body text-ink-600 mt-1">
-                          {plan.description}
-                        </p>
+                  {/* Features list */}
+                  <div className="space-y-2 pt-4 border-t border-forest-100/50">
+                    {plan.features.map((feature, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <Check
+                          className="h-4 w-4 flex-shrink-0 mt-0.5 text-forest-500"
+                          strokeWidth={2.5}
+                        />
+                        <span className="text-sm font-body text-ink-700 leading-relaxed">
+                          {feature}
+                        </span>
                       </div>
-                      <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 transition-all ${
-                        selected
-                          ? "bg-forest-500 text-cream-50"
-                          : "bg-cream-100 text-transparent"
-                      }`}>
-                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                      </div>
-                    </div>
-
-                    {/* Features list */}
-                    <div className="space-y-1.5 pt-3 border-t border-forest-100/50">
-                      {plan.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <Check
-                            className={`h-3.5 w-3.5 flex-shrink-0 mt-0.5 ${
-                              plan.highlight ? "text-gold-600" : "text-forest-500"
-                            }`}
-                            strokeWidth={2.5}
-                          />
-                          <span className="text-xs font-body text-ink-700 leading-relaxed">
-                            {feature}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Footer commission */}
-                    <div className="mt-4 pt-3 border-t border-forest-100/50">
-                      <p className="text-xs font-mono text-ink-500">
-                        + Commission <span className="text-gold-700 font-semibold">{plan.commission}</span>
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
 
             <div className="rounded-lg bg-forest-50 border border-forest-100 p-3 text-xs font-body text-ink-600">
-              <strong className="text-ink-900">Pas de prélèvement maintenant.</strong> Tu as jusqu&apos;à ta première mission publiée pour finaliser ton choix de plan. Les 10 premières inscriptions au plan Business ne seront jamais facturées pendant la phase de lancement.
+              <strong className="text-ink-900">Pas de prélèvement maintenant.</strong> Les 10 premières inscriptions ne seront jamais facturées pendant la phase de lancement.
             </div>
           </>
         )}
@@ -635,11 +553,8 @@ export default function InstallerRegisterForm() {
               </RecapSection>
 
               <RecapSection title="Plan">
-                <RecapRow
-                  label="Abonnement"
-                  value={`${PLANS.find((p) => p.id === selectedPlan)?.name} — ${PLANS.find((p) => p.id === selectedPlan)?.price}€/mois`}
-                />
-                <RecapRow label="Commission" value="3% fixe par chantier" />
+                <RecapRow label="Abonnement" value="Business — Gratuit" />
+                <RecapRow label="Offre" value="10 premiers inscrits" />
               </RecapSection>
             </div>
 
