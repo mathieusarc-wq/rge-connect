@@ -7,14 +7,17 @@ import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
 export default function ActivationSuccess({
   firstName,
   redirectTo,
+  previewMode = false,
 }: {
   firstName: string;
   redirectTo: string;
+  previewMode?: boolean;
 }) {
   const router = useRouter();
   const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
+    if (previewMode) return;
     const interval = setInterval(() => {
       setCountdown((c) => Math.max(0, c - 1));
     }, 1000);
@@ -25,7 +28,7 @@ export default function ActivationSuccess({
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, [router, redirectTo]);
+  }, [router, redirectTo, previewMode]);
 
   return (
     <div className="min-h-screen flex flex-col bg-cream-50">

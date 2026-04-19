@@ -42,7 +42,11 @@ export default function ActivationPreviewPage() {
 
       {/* Content */}
       {state === "success" && (
-        <ActivationSuccess firstName="Thomas" redirectTo="/onboarding/documents" />
+        <ActivationSuccess
+          firstName="Thomas"
+          redirectTo="/onboarding/documents"
+          previewMode
+        />
       )}
 
       {state === "error" && (
