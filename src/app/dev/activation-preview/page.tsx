@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ActivationSuccess from "@/app/(auth)/activate/success-client";
-import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { CheckCircle2, AlertCircle, ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default function ActivationPreviewPage() {
@@ -53,7 +53,8 @@ export default function ActivationPreviewPage() {
         <ActivationResult
           kind="error"
           title="Lien invalide ou expiré"
-          message="Le lien d'activation est invalide ou a expiré. Demande un nouveau lien depuis la page de connexion."
+          message="Le lien d'activation est invalide ou a expiré. Demande un nouveau lien ci-dessous."
+          showResend
         />
       )}
 
@@ -73,10 +74,12 @@ function ActivationResult({
   kind,
   title,
   message,
+  showResend = false,
 }: {
   kind: "success" | "error" | "info";
   title: string;
   message: string;
+  showResend?: boolean;
 }) {
   return (
     <div className="min-h-[calc(100vh-60px)] flex flex-col bg-cream-50">
@@ -117,10 +120,23 @@ function ActivationResult({
             {message}
           </p>
 
-          <div className="mt-8">
+          <div className="mt-8 space-y-3">
+            {showResend && (
+              <Link
+                href="/resend-activation"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-forest-500 px-4 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors"
+              >
+                <Mail className="h-4 w-4" strokeWidth={1.8} />
+                Renvoyer un email d&apos;activation
+              </Link>
+            )}
             <Link
               href="/login"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-forest-500 px-4 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors"
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-body font-semibold transition-colors ${
+                showResend
+                  ? "border border-forest-100 bg-white text-ink-700 hover:border-forest-200"
+                  : "bg-forest-500 text-cream-50 hover:bg-forest-600"
+              }`}
             >
               Retour à la connexion
               <ArrowRight className="h-3.5 w-3.5" />
