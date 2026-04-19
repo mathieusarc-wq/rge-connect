@@ -116,7 +116,8 @@ export default async function ActivatePage({ searchParams }: PageProps) {
     <ActivationResult
       kind="info"
       title="En attente d'activation"
-      message="Clique sur le lien que tu as reçu par email pour activer ton compte."
+      message="Clique sur le lien reçu par email pour activer ton compte. Tu n'as rien reçu ?"
+      showResend
     />
   );
 }
