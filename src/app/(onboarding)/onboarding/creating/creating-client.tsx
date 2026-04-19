@@ -40,26 +40,26 @@ export default function CreatingClient({
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Étapes successives 700ms chacune
+    // Étapes successives 1800ms chacune (rythme plus réaliste)
     const stepInterval = setInterval(() => {
       setCurrentStep((s) => {
         if (s >= steps.length) return s;
         return s + 1;
       });
-    }, 700);
+    }, 1800);
 
-    // Barre de progression continue 0 → 100 sur 3s
+    // Barre de progression continue 0 → 100 sur ~7s
     const progressInterval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) return 100;
-        return p + 2;
+        return p + 1;
       });
-    }, 60);
+    }, 75);
 
-    // Redirect après 3.5s (après la dernière étape affichée)
+    // Redirect après 7.5s (laisse le temps de lire chaque étape)
     const redirectTimeout = setTimeout(() => {
       router.push(redirectTo);
-    }, 3500);
+    }, 7500);
 
     return () => {
       clearInterval(stepInterval);
