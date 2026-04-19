@@ -50,7 +50,7 @@ const PLANS: Plan[] = [
     original_price: "199",
     badge: "Offre de lancement · 10 premiers inscrits",
     badge_accent: "gold",
-    description: "Simple, efficace, sécurisé. Tout pour piloter vos chantiers.",
+    description: "Tout pour sous-traiter vos chantiers en toute sécurité.",
     commission: "",
     recommended: true,
     highlight: true,
