@@ -3,10 +3,29 @@
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowRight, RotateCw, CheckCircle2 } from "lucide-react";
+import { useTransition, useState } from "react";
+import { resendActivationEmail } from "../../resend-activation/actions";
 
 export default function SuccessClient() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const [isPending, startTransition] = useTransition();
+  const [feedback, setFeedback] = useState<
+    { kind: "success" | "error"; message: string } | null
+  >(null);
+
+  const handleResend = () => {
+    if (!email) return;
+    setFeedback(null);
+    startTransition(async () => {
+      const r = await resendActivationEmail(email);
+      if (r.success) {
+        setFeedback({ kind: "success", message: "Nouvel email envoyé." });
+      } else {
+        setFeedback({ kind: "error", message: r.error });
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-cream-50">
@@ -70,13 +89,27 @@ export default function SuccessClient() {
             </p>
           </div>
 
+          {feedback && (
+            <div
+              className={`mt-6 rounded-lg border p-3 text-sm font-body text-left ${
+                feedback.kind === "success"
+                  ? "bg-forest-50 border-forest-200 text-forest-700"
+                  : "bg-red-50 border-red-200 text-red-700"
+              }`}
+            >
+              {feedback.message}
+            </div>
+          )}
+
           <div className="mt-8 space-y-3">
             <button
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-forest-100 bg-white px-4 py-2.5 text-sm font-body font-medium text-ink-700 hover:border-forest-200 transition-colors"
+              onClick={handleResend}
+              disabled={isPending || !email}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-forest-100 bg-white px-4 py-2.5 text-sm font-body font-medium text-ink-700 hover:border-forest-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               type="button"
             >
-              <RotateCw className="h-3.5 w-3.5" />
-              Renvoyer l&apos;email de validation
+              <RotateCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} />
+              {isPending ? "Envoi…" : "Renvoyer l'email de validation"}
             </button>
 
             <Link

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff, Shield, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Shield, AlertCircle, Loader2, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signInAction } from "./actions";
@@ -11,15 +11,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setErrorCode(null);
     const formData = new FormData(e.currentTarget);
     startTransition(async () => {
       const result = await signInAction(formData);
       if (!result.success) {
         setError(result.error);
+        setErrorCode(result.code);
       }
     });
   };
@@ -66,9 +70,20 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div className="mt-6 rounded-lg bg-red-50 border border-red-200 p-3.5 flex items-start gap-2.5">
-              <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={1.8} />
-              <p className="text-sm font-body text-red-700 leading-relaxed">{error}</p>
+            <div className="mt-6 rounded-lg bg-red-50 border border-red-200 p-3.5">
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+                <p className="text-sm font-body text-red-700 leading-relaxed">{error}</p>
+              </div>
+              {errorCode === "email_not_confirmed" && (
+                <Link
+                  href={`/resend-activation?email=${encodeURIComponent(email)}`}
+                  className="mt-3 inline-flex items-center gap-2 rounded-md bg-white border border-red-200 px-3 py-1.5 text-xs font-body font-semibold text-red-700 hover:bg-red-100 transition-colors"
+                >
+                  <Mail className="h-3.5 w-3.5" strokeWidth={1.8} />
+                  Renvoyer l&apos;email d&apos;activation
+                </Link>
+              )}
             </div>
           )}
 
@@ -91,6 +106,8 @@ export default function LoginPage() {
                 autoCorrect="off"
                 spellCheck={false}
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="vous@entreprise.fr"
                 className="h-12 bg-cream-50 border-forest-100 text-ink-900 placeholder:text-ink-400 focus:border-forest-500 focus:ring-forest-500/20 text-base"
               />

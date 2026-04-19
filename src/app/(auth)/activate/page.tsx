@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, Mail } from "lucide-react";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import ActivationSuccess from "./success-client";
 
@@ -25,8 +25,9 @@ export default async function ActivatePage({ searchParams }: PageProps) {
         title="Lien invalide ou expiré"
         message={
           params.error_description ??
-          "Le lien d'activation est invalide ou a expiré. Demande un nouveau lien depuis la page de connexion."
+          "Le lien d'activation est invalide ou a expiré. Demande un nouveau lien ci-dessous."
         }
+        showResend
       />
     );
   }
@@ -46,6 +47,7 @@ export default async function ActivatePage({ searchParams }: PageProps) {
           kind="error"
           title="Activation échouée"
           message={error.message}
+          showResend
         />
       );
     }
@@ -81,9 +83,10 @@ export default async function ActivatePage({ searchParams }: PageProps) {
           title="Activation échouée"
           message={
             error.message.includes("code verifier")
-              ? "Ce lien a été ouvert sur un autre appareil. Demande un nouveau lien depuis la page de connexion."
+              ? "Ce lien a été ouvert sur un autre appareil. Demande un nouveau lien ci-dessous."
               : error.message
           }
+          showResend
         />
       );
     }
@@ -122,10 +125,12 @@ function ActivationResult({
   kind,
   title,
   message,
+  showResend = false,
 }: {
   kind: "success" | "error" | "info";
   title: string;
   message: string;
+  showResend?: boolean;
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-cream-50">
@@ -170,10 +175,23 @@ function ActivationResult({
             {message}
           </p>
 
-          <div className="mt-8">
+          <div className="mt-8 space-y-3">
+            {showResend && (
+              <Link
+                href="/resend-activation"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-forest-500 px-4 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors"
+              >
+                <Mail className="h-4 w-4" strokeWidth={1.8} />
+                Renvoyer un email d&apos;activation
+              </Link>
+            )}
             <Link
               href="/login"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-forest-500 px-4 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors"
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-body font-semibold transition-colors ${
+                showResend
+                  ? "border border-forest-100 bg-white text-ink-700 hover:border-forest-200"
+                  : "bg-forest-500 text-cream-50 hover:bg-forest-600"
+              }`}
             >
               Retour à la connexion
               <ArrowRight className="h-3.5 w-3.5" />
