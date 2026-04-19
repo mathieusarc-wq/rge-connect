@@ -18,13 +18,30 @@ import {
   Shield,
   Search,
   CheckCircle2,
+  Sparkles,
+  CreditCard,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUpSubcontractorAction } from "./actions";
 import { lookupSiret, type SiretLookupResult } from "@/lib/insee/lookup-siret";
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
+
+const PLAN_FEATURES = [
+  "Missions qualifiées livrées — chantiers RGE diffusés automatiquement dans votre zone, selon vos qualifications",
+  "Paiement garanti — vous êtes payé même si l'installateur tarde à vous régler",
+  "Affacturage 48h en option — votre facture réglée en 2 jours après la fin du chantier",
+  "5 créneaux en 1 clic — vous proposez vos disponibilités au client en quelques secondes",
+  "Ordre de mission fourni — signé électroniquement, conforme à la loi sous-traitance",
+  "Photos horodatées eIDAS — protection en cas de litige, preuve à valeur juridique",
+  "PV électronique — signé à distance par le client final",
+  "Avis clients vérifiés — publiés sur votre fiche + republication automatique sur Google Business Profile",
+  "Coffre-fort documentaire — Kbis, RGE, décennale, URSSAF avec alertes avant expiration",
+  "Assurance décennale partenaire — tarif groupe négocié via courtier BTP",
+  "Centrale d'achats — matériel à tarifs négociés jusqu'à -20%",
+  "Dashboard complet — suivi de vos chantiers, revenus, score qualité",
+];
 
 const QUALIFICATIONS = [
   { id: "QualiPac", label: "QualiPac", description: "PAC air-eau et air-air" },
@@ -60,7 +77,8 @@ const steps: { id: Step; title: string; icon: React.ComponentType<{ className?: 
   { id: 1, title: "Votre compte", icon: User },
   { id: 2, title: "Votre entreprise", icon: Building2 },
   { id: 3, title: "Qualifications", icon: Award },
-  { id: 4, title: "Confirmation", icon: FileCheck },
+  { id: 4, title: "Plan", icon: CreditCard },
+  { id: 5, title: "Confirmation", icon: FileCheck },
 ];
 
 export default function SubcontractorRegisterForm() {
@@ -194,6 +212,9 @@ export default function SubcontractorRegisterForm() {
       return form.no_rge || form.qualifications.length >= 1;
     }
     if (currentStep === 4) {
+      return true; // plan unique auto-sélectionné
+    }
+    if (currentStep === 5) {
       return form.accept_terms;
     }
     return false;
@@ -229,7 +250,7 @@ export default function SubcontractorRegisterForm() {
           Créer ton compte artisan RGE
         </h1>
         <p className="mt-2 text-sm font-body text-ink-500">
-          4 étapes · environ 2 min · ton compte est activé après validation email
+          5 étapes · environ 2 min · ton compte est activé après validation email
         </p>
       </div>
 
@@ -656,8 +677,60 @@ export default function SubcontractorRegisterForm() {
           </>
         )}
 
-        {/* ===== STEP 4 ===== */}
+        {/* ===== STEP 4 — PLAN ===== */}
         {currentStep === 4 && (
+          <>
+            <div>
+              <h2 className="text-lg font-display font-bold text-ink-900">Ton plan</h2>
+              <p className="text-sm font-body text-ink-500 mt-1">
+                Tout inclus, sans engagement.
+              </p>
+            </div>
+
+            <div className="w-full rounded-xl border-2 border-gold-500 bg-gradient-to-br from-gold-500/10 to-forest-500/5 p-6 shadow-md relative">
+              <div className="absolute -top-3 left-4 inline-flex items-center gap-1 rounded-full bg-gold-500 px-3 py-1 shadow-sm">
+                <Sparkles className="h-3 w-3 text-forest-900" strokeWidth={2.5} />
+                <span className="text-[10px] font-mono uppercase tracking-wider text-forest-900 font-semibold">
+                  Offre de lancement · 10 premiers inscrits
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="text-xl font-display font-bold text-ink-900">Pro</span>
+                  <span className="text-lg font-body text-ink-400 line-through">149€</span>
+                  <span className="text-4xl font-display font-extrabold text-gold-600">
+                    Gratuit
+                  </span>
+                </div>
+                <p className="text-sm font-body text-ink-700 mt-2">
+                  Tout pour trouver des chantiers sécurisés et vous concentrer sur votre métier.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-forest-100/50">
+                {PLAN_FEATURES.map((feature, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <Check
+                      className="h-4 w-4 flex-shrink-0 mt-0.5 text-forest-500"
+                      strokeWidth={2.5}
+                    />
+                    <span className="text-sm font-body text-ink-700 leading-relaxed">
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-forest-50 border border-forest-100 p-3 text-xs font-body text-ink-600">
+              <strong className="text-ink-900">Pas de prélèvement maintenant.</strong> Les 10 premières inscriptions ne seront jamais facturées pendant la phase de lancement.
+            </div>
+          </>
+        )}
+
+        {/* ===== STEP 5 — RÉCAPITULATIF ===== */}
+        {currentStep === 5 && (
           <>
             <div>
               <h2 className="text-lg font-display font-bold text-ink-900">
@@ -701,6 +774,11 @@ export default function SubcontractorRegisterForm() {
                     })}
                   </div>
                 )}
+              </RecapSection>
+
+              <RecapSection title="Plan">
+                <RecapRow label="Abonnement" value="Pro — Gratuit" />
+                <RecapRow label="Offre" value="10 premiers inscrits" />
               </RecapSection>
             </div>
 
@@ -754,7 +832,7 @@ export default function SubcontractorRegisterForm() {
           <div />
         )}
 
-        {currentStep < 4 ? (
+        {currentStep < 5 ? (
           <button
             onClick={() => setCurrentStep((currentStep + 1) as Step)}
             disabled={!canAdvance()}
