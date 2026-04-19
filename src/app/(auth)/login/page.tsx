@@ -195,16 +195,15 @@ export default function LoginPage() {
               </span>
             </div>
 
-            <h2 className="text-3xl xl:text-4xl font-display font-bold text-cream-50 leading-tight tracking-tight">
-              La plateforme de mise en relation
+            <h2 className="text-4xl xl:text-5xl font-display font-bold text-cream-50 leading-[1.05] tracking-tight">
+              Sous-traitez vos chantiers
               <br />
-              <span className="text-gold-400">Installateurs & Sous-traitants RGE</span>
+              <span className="text-gold-400">en toute sécurité.</span>
             </h2>
 
             <p className="text-base font-body text-ink-300 max-w-md leading-relaxed">
-              Trouvez les bons artisans certifiés pour vos chantiers ENR. Gérez
-              vos missions, sécurisez vos paiements et pilotez votre activité
-              depuis un seul espace.
+              La plateforme qui relie installateurs ENR et artisans RGE certifiés.
+              Chantiers sécurisés, paiements garantis, qualité vérifiée.
             </p>
 
             <div className="space-y-4 pt-2">
@@ -213,7 +212,7 @@ export default function LoginPage() {
                   <svg className="h-4 w-4 text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                 </div>
                 <p className="text-sm font-body text-cream-100">
-                  Matching intelligent entre installateurs et artisans RGE certifiés
+                  Artisans RGE certifiés de votre zone, notés par vos clients
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -221,7 +220,7 @@ export default function LoginPage() {
                   <svg className="h-4 w-4 text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 17v4" /></svg>
                 </div>
                 <p className="text-sm font-body text-cream-100">
-                  Suivi complet du chantier : création, planification, exécution
+                  Chantier suivi de A à Z : ordre de mission, créneaux, PV électronique
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -229,7 +228,7 @@ export default function LoginPage() {
                   <Shield className="h-4 w-4 text-gold-400" strokeWidth={1.5} />
                 </div>
                 <p className="text-sm font-body text-cream-100">
-                  Paiements sécurisés par séquestre et documents certifiés eIDAS
+                  Paiement par séquestre, photos horodatées eIDAS, décennale partenaire
                 </p>
               </div>
             </div>
