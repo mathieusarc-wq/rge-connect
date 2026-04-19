@@ -6,6 +6,7 @@ import {
   type DocumentKind as AIDocumentKind,
   type ExtractedFields,
 } from "@/lib/ai/document-extractor";
+import type { ValidationResult, ValidationContext } from "@/lib/ai/document-validator";
 import { rateLimit, RATE_LIMITS } from "@/lib/security/rate-limit";
 import { logAudit } from "@/lib/security/audit";
 import { headers } from "next/headers";
@@ -43,6 +44,7 @@ export type UploadResult =
       extracted: ExtractedFields;
       extraction_confidence: number;
       extraction_quality: string;
+      validation: ValidationResult;
     }
   | {
       success: false;
@@ -118,7 +120,7 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
     };
   }
 
-  // Profile
+  // Profile + entité liée (pour context validation IA)
   const { data: profile } = await supabase
     .from("profiles")
     .select("subcontractor_id, installer_id, role")
@@ -129,7 +131,39 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
     return { success: false, code: "not_authenticated", error: "Profil introuvable." };
   }
 
+  // Récupère les infos déclarées à l'inscription pour cross-check IA
   const service = createServiceRoleClient();
+  let context: ValidationContext | undefined;
+
+  if (profile.role === "subcontractor" && profile.subcontractor_id) {
+    const { data: sub } = await service
+      .from("subcontractors")
+      .select("siret, name, qualifications")
+      .eq("id", profile.subcontractor_id)
+      .single();
+    if (sub) {
+      context = {
+        declared_siret: sub.siret,
+        declared_company_name: sub.name,
+        declared_qualifications: (sub.qualifications as string[] | null) ?? [],
+        slot,
+      };
+    }
+  } else if (profile.role === "installer" && profile.installer_id) {
+    const { data: inst } = await service
+      .from("installers")
+      .select("siret, name")
+      .eq("id", profile.installer_id)
+      .single();
+    if (inst) {
+      context = {
+        declared_siret: inst.siret,
+        declared_company_name: inst.name,
+        slot,
+      };
+    }
+  }
+
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const sha256 = crypto.createHash("sha256").update(buffer).digest("hex");
@@ -152,9 +186,9 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
     };
   }
 
-  // IA analyse
+  // IA analyse + validation croisée
   const base64 = buffer.toString("base64");
-  const extraction = await extractDocument(base64, slotToAiKind[slot]);
+  const extraction = await extractDocument(base64, slotToAiKind[slot], context);
 
   if (!extraction.success) {
     await logAudit({
@@ -179,6 +213,14 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
     const docKind = mapSlotToDBKind(slot);
     const extractedData = extraction.data as Record<string, unknown>;
 
+    // Mapping validation.status → DB enum document_status
+    const dbStatus: "valid" | "pending" | "rejected" | "expired" =
+      extraction.validation.status === "valid"
+        ? "valid"
+        : extraction.validation.status === "rejected"
+        ? "rejected"
+        : "pending";
+
     const { data: doc, error: dbError } = await service
       .from("subcontractor_documents")
       .insert({
@@ -188,7 +230,10 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
         file_name: file.name,
         issued_at: stringToDate(extractedData.valid_from as string | undefined) ?? stringToDate(extractedData.issue_date as string | undefined) ?? null,
         expires_at: stringToDate(extractedData.valid_until as string | undefined) ?? null,
-        status: isExpired(extractedData.valid_until as string | undefined) ? "expired" : "pending",
+        status: dbStatus,
+        rejected_reason: extraction.validation.status === "rejected"
+          ? extraction.validation.issues.map((i) => i.message).join(" · ")
+          : null,
         extracted_data: extractedData as never,
       })
       .select("id")
@@ -222,11 +267,11 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
       extracted: extraction.data,
       extraction_confidence: Number(extraction.data.confidence_score ?? 0),
       extraction_quality: String(extraction.data.extraction_quality ?? "unknown"),
+      validation: extraction.validation,
     };
   }
 
   // Pour installer : on log juste le fichier côté Storage pour l'instant
-  // (table installer_documents à créer en migration future)
   await logAudit({
     action: "document_uploaded",
     actorId: user.id,
@@ -235,6 +280,8 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
       slot,
       storage_path: storagePath,
       confidence: extraction.data.confidence_score,
+      validation_status: extraction.validation.status,
+      issues_count: extraction.validation.issues.length,
     },
   });
 
@@ -244,6 +291,7 @@ export async function uploadAndAnalyzeDocument(formData: FormData): Promise<Uplo
     extracted: extraction.data,
     extraction_confidence: Number(extraction.data.confidence_score ?? 0),
     extraction_quality: String(extraction.data.extraction_quality ?? "unknown"),
+    validation: extraction.validation,
   };
 }
 

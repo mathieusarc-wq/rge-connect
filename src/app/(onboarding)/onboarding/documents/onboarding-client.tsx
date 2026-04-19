@@ -176,11 +176,25 @@ export default function OnboardingClient({
   const [states, setStates] = useState<Record<string, DocState>>(initialStates);
 
   const requiredDocs = docs.filter((d) => d.required);
-  const completedRequired = requiredDocs.filter(
-    (d) => states[d.slot]?.status === "success"
-  ).length;
+
+  // Un doc est "validé" s'il est success ET validation.status === 'valid'
+  const isDocValid = (slot: string): boolean => {
+    const s = states[slot];
+    if (!s || s.status !== "success" || !s.result?.success) return false;
+    const validationStatus = s.result.validation?.status;
+    // Si pas de validation (docs existants pré-chargés), on fait confiance au DB
+    if (!validationStatus) return true;
+    return validationStatus === "valid";
+  };
+
+  const completedRequired = requiredDocs.filter((d) => isDocValid(d.slot)).length;
+  const blockedRequired = requiredDocs.filter((d) => {
+    const s = states[d.slot];
+    return s?.status === "success" && s.result?.success && s.result.validation?.status !== "valid";
+  }).length;
   const progress = requiredDocs.length > 0 ? (completedRequired / requiredDocs.length) * 100 : 0;
   const allRequiredDone = completedRequired === requiredDocs.length;
+  const needsNextStep = role === "subcontractor"; // sub doit définir zone ; installer direct → creating
 
   return (
     <div className="min-h-screen bg-cream-50">
@@ -243,33 +257,53 @@ export default function OnboardingClient({
           ))}
         </div>
 
+        {/* Alerte si docs bloqués */}
+        {blockedRequired > 0 && (
+          <div className="mt-8 rounded-xl border-2 border-red-200 bg-red-50 p-5">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+              <div>
+                <p className="text-sm font-body font-semibold text-red-900">
+                  {blockedRequired} document{blockedRequired > 1 ? "s" : ""} à corriger
+                </p>
+                <p className="text-xs font-body text-red-700 mt-1 leading-relaxed">
+                  L&apos;IA a détecté des incohérences. Consulte les messages sur chaque document concerné et upload une version corrigée. Tu ne peux pas continuer tant que tous les documents obligatoires ne sont pas validés.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Action */}
-        <div className="mt-8 rounded-xl border border-forest-100 bg-white p-5 shadow-sm">
+        <div className="mt-4 rounded-xl border border-forest-100 bg-white p-5 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p className="text-sm font-body font-semibold text-ink-900">
                 {allRequiredDone
-                  ? "Tous tes documents obligatoires sont uploadés ✓"
-                  : `${requiredDocs.length - completedRequired} document${
-                      requiredDocs.length - completedRequired > 1 ? "s" : ""
-                    } restant${requiredDocs.length - completedRequired > 1 ? "s" : ""}`}
+                  ? "Tous tes documents sont validés par l'IA ✓"
+                  : blockedRequired > 0
+                  ? `${blockedRequired} document${blockedRequired > 1 ? "s" : ""} à corriger · ${requiredDocs.length - completedRequired - blockedRequired} restant${requiredDocs.length - completedRequired - blockedRequired > 1 ? "s" : ""}`
+                  : `${requiredDocs.length - completedRequired} document${requiredDocs.length - completedRequired > 1 ? "s" : ""} à uploader`}
               </p>
               <p className="text-xs font-body text-ink-500 mt-0.5">
                 {allRequiredDone
-                  ? "Tu peux accéder à ton espace. Les vérifications approfondies seront effectuées sous 48h."
-                  : "Les documents seront vérifiés automatiquement par l'IA et manuellement sous 48h."}
+                  ? needsNextStep
+                    ? "Prochaine étape : définir ta zone d'intervention."
+                    : "Ton espace est prêt à être créé."
+                  : "RGE Connect Vision vérifie chaque document : SIRET, dates, cohérence avec tes infos."}
               </p>
             </div>
             <button
               onClick={() => {
-                const target =
-                  role === "installer" ? "/installer/dashboard" : "/dashboard";
+                const target = needsNextStep
+                  ? "/onboarding/zone"
+                  : "/onboarding/creating";
                 router.push(target);
               }}
               disabled={!allRequiredDone}
               className="inline-flex items-center gap-2 rounded-lg bg-forest-500 px-5 py-2.5 text-sm font-body font-semibold text-cream-50 hover:bg-forest-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
             >
-              Accéder à mon espace
+              {needsNextStep ? "Continuer vers ma zone" : "Créer mon espace"}
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -434,12 +468,13 @@ function DocumentSlot({
           </div>
         )}
 
-        {/* État success : afficher les données extraites */}
+        {/* État success : afficher les données extraites + issues */}
         {state.status === "success" && state.result?.success && (
           <ExtractedDataPreview
             data={state.result.extracted}
             confidence={state.result.extraction_confidence}
             quality={state.result.extraction_quality}
+            validation={state.result.validation}
             onReset={() => onChange({ status: "idle" })}
           />
         )}
@@ -471,13 +506,17 @@ function ExtractedDataPreview({
   data,
   confidence,
   quality,
+  validation,
   onReset,
 }: {
   data: Record<string, unknown>;
   confidence: number;
-  quality: string;
+  quality?: string;
+  validation?: import("@/lib/ai/document-validator").ValidationResult;
   onReset: () => void;
 }) {
+  // `quality` is only used for audit logging, not rendered — kept for API completeness
+  void quality;
   const [expanded, setExpanded] = useState(false);
 
   const displayEntries = Object.entries(data).filter(
@@ -487,39 +526,112 @@ function ExtractedDataPreview({
       !["confidence_score", "extraction_quality", "warnings"].includes(k)
   );
 
-  const warnings = data.warnings as string | undefined;
+  const status = validation?.status ?? "valid";
+  const issues = validation?.issues ?? [];
+  const rejectedIssues = issues.filter((i) => i.severity === "rejected");
+  const warningIssues = issues.filter((i) => i.severity === "warning");
 
-  if (displayEntries.length === 0) {
+  if (displayEntries.length === 0 && issues.length === 0) {
     return (
       <div className="rounded-lg bg-forest-50/60 border border-forest-200 p-3 text-sm font-body text-ink-700">
         Document enregistré.
-        <button
-          onClick={onReset}
-          className="ml-2 text-xs text-forest-500 hover:underline"
-        >
+        <button onClick={onReset} className="ml-2 text-xs text-forest-500 hover:underline">
           Remplacer
         </button>
       </div>
     );
   }
 
+  // Card principale — couleur selon status
+  const mainCardClass =
+    status === "rejected"
+      ? "bg-red-50/60 border-red-300"
+      : status === "warning"
+      ? "bg-gold-500/10 border-gold-300/40"
+      : "bg-forest-50/60 border-forest-200";
+
+  const statusLabel =
+    status === "rejected"
+      ? "Document rejeté"
+      : status === "warning"
+      ? "Vérification requise"
+      : "Validé par l'IA";
+
+  const statusColor =
+    status === "rejected"
+      ? "text-red-700"
+      : status === "warning"
+      ? "text-gold-700"
+      : "text-forest-700";
+
   return (
     <div className="space-y-2">
-      <div className="rounded-lg bg-forest-50/60 border border-forest-200 p-3">
+      {/* Bloc ISSUES BLOQUANTES (rouge) */}
+      {rejectedIssues.length > 0 && (
+        <div className="rounded-lg bg-red-50 border-2 border-red-200 p-3">
+          <div className="flex items-start gap-2 mb-2">
+            <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" strokeWidth={2} />
+            <p className="text-sm font-body font-semibold text-red-900">
+              {rejectedIssues.length === 1 ? "1 problème bloquant" : `${rejectedIssues.length} problèmes bloquants`}
+            </p>
+          </div>
+          <ul className="space-y-1.5 ml-6">
+            {rejectedIssues.map((issue, i) => (
+              <li key={i} className="text-xs font-body text-red-800 leading-relaxed list-disc">
+                {issue.message}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 pt-3 border-t border-red-200">
+            <button
+              onClick={onReset}
+              className="inline-flex items-center gap-1.5 rounded-md bg-red-500 px-3 py-1.5 text-xs font-body font-semibold text-white hover:bg-red-600 transition-colors"
+            >
+              <Upload className="h-3 w-3" />
+              Uploader un autre document
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Bloc WARNINGS (gold) */}
+      {warningIssues.length > 0 && rejectedIssues.length === 0 && (
+        <div className="rounded-lg bg-gold-500/10 border border-gold-300/40 p-3">
+          <div className="flex items-start gap-2 mb-2">
+            <AlertCircle className="h-4 w-4 text-gold-700 flex-shrink-0 mt-0.5" strokeWidth={2} />
+            <p className="text-sm font-body font-semibold text-gold-900">
+              À vérifier
+            </p>
+          </div>
+          <ul className="space-y-1 ml-6">
+            {warningIssues.map((issue, i) => (
+              <li key={i} className="text-xs font-body text-gold-800 leading-relaxed list-disc">
+                {issue.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Card principale avec les données extraites */}
+      <div className={`rounded-lg border p-3 ${mainCardClass}`}>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-body font-semibold text-forest-700">
-              Extrait par IA — confiance {confidence}% ({quality})
+            {status === "valid" && <CheckCircle2 className="h-3.5 w-3.5 text-forest-600" strokeWidth={2.5} />}
+            <span className={`text-xs font-body font-semibold ${statusColor}`}>
+              {statusLabel} · confiance {confidence}%
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setExpanded((e) => !e)}
-              className="text-xs font-body text-forest-600 hover:text-forest-700 transition-colors flex items-center gap-1"
-            >
-              <Eye className="h-3 w-3" />
-              {expanded ? "Masquer" : "Voir détails"}
-            </button>
+            {displayEntries.length > 0 && (
+              <button
+                onClick={() => setExpanded((e) => !e)}
+                className="text-xs font-body text-ink-600 hover:text-ink-800 transition-colors flex items-center gap-1"
+              >
+                <Eye className="h-3 w-3" />
+                {expanded ? "Masquer" : "Voir détails"}
+              </button>
+            )}
             <button
               onClick={onReset}
               className="text-xs font-body text-ink-500 hover:text-red-500 transition-colors"
@@ -545,13 +657,6 @@ function ExtractedDataPreview({
           </div>
         )}
       </div>
-
-      {warnings && (
-        <div className="rounded-lg bg-gold-500/10 border border-gold-300/40 p-2.5 flex items-start gap-2">
-          <AlertCircle className="h-3.5 w-3.5 text-gold-700 flex-shrink-0 mt-0.5" strokeWidth={2} />
-          <p className="text-xs font-body text-ink-700 leading-relaxed">{warnings}</p>
-        </div>
-      )}
     </div>
   );
 }

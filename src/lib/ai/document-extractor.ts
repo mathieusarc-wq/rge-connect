@@ -1,5 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getServiceKey } from "@/lib/services/get-service-key";
+import {
+  validateDocument,
+  type ValidationContext,
+  type ValidationResult,
+} from "./document-validator";
 
 /**
  * Extraction IA (RGE Connect Vision) des documents d'onboarding.
@@ -33,7 +38,12 @@ export interface ExtractedFields {
 }
 
 export type DocumentExtractionResult =
-  | { success: true; kind: DocumentKind; data: ExtractedFields }
+  | {
+      success: true;
+      kind: DocumentKind;
+      data: ExtractedFields;
+      validation: ValidationResult;
+    }
   | {
       success: false;
       error: string;
@@ -200,7 +210,8 @@ const PROMPTS: Record<DocumentKind, string> = {
 
 export async function extractDocument(
   pdfBase64: string,
-  kind: DocumentKind
+  kind: DocumentKind,
+  context?: ValidationContext
 ): Promise<DocumentExtractionResult> {
   const apiKey = await getServiceKey("anthropic", "api_key");
   if (!apiKey) {
@@ -265,10 +276,18 @@ export async function extractDocument(
       };
     }
 
+    const extractedData = toolUseBlock.input as ExtractedFields;
+
+    // Validation stricte avec croisement context d'inscription (si fourni)
+    const validation: ValidationResult = context
+      ? validateDocument(kind, extractedData, context)
+      : { status: "valid", issues: [] };
+
     return {
       success: true,
       kind,
-      data: toolUseBlock.input as ExtractedFields,
+      data: extractedData,
+      validation,
     };
   } catch (error) {
     if (error instanceof Anthropic.AuthenticationError) {
