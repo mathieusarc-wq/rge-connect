@@ -10,7 +10,7 @@ const schema = z.object({
   email: z.string().email().max(255).toLowerCase(),
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://rge-connect.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://enr-connect.vercel.app";
 
 export type ResendResult =
   | { success: true }

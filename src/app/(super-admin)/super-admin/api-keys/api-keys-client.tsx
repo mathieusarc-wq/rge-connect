@@ -38,7 +38,7 @@ type ServiceConfig = {
 const SERVICES: ServiceConfig[] = [
   {
     service: "anthropic",
-    title: "Anthropic (RGE Connect Vision)",
+    title: "Anthropic (ENR Connect Vision)",
     icon: Sparkles,
     description:
       "IA Claude utilisée pour l'extraction automatique des devis et documents d'onboarding.",
@@ -50,7 +50,7 @@ const SERVICES: ServiceConfig[] = [
         placeholder: "sk-ant-...",
         isSensitive: true,
         description:
-          "Depuis https://console.anthropic.com/settings/keys — crée une clé nommée rge-connect-prod.",
+          "Depuis https://console.anthropic.com/settings/keys — crée une clé nommée enr-connect-prod.",
       },
       {
         name: "base_url",
@@ -82,14 +82,14 @@ const SERVICES: ServiceConfig[] = [
       {
         name: "sender_email",
         label: "Email expéditeur",
-        placeholder: "no-reply@rge-connect.fr",
+        placeholder: "no-reply@enr-connect.fr",
         isSensitive: false,
         description: "Domaine à vérifier dans Brevo (SPF + DKIM + DMARC).",
       },
       {
         name: "sender_name",
         label: "Nom expéditeur",
-        placeholder: "RGE Connect",
+        placeholder: "ENR Connect",
         isSensitive: false,
       },
     ],
@@ -171,7 +171,7 @@ const SERVICES: ServiceConfig[] = [
     ],
   },
   {
-    service: "rge_connect",
+    service: "enr_connect",
     title: "Webhooks sortants",
     icon: Webhook,
     description:

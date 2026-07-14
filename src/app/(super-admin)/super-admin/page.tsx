@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Vue d'ensemble — Super Admin — RGE Connect",
+  title: "Vue d'ensemble — Super Admin — ENR Connect",
 };
 
 export default async function SuperAdminHomePage() {
@@ -154,7 +154,7 @@ export default async function SuperAdminHomePage() {
           </span>
         </div>
         <h1 className="text-3xl font-display font-bold text-ink-900 tracking-tight">
-          RGE Connect — Pilotage plateforme
+          ENR Connect — Pilotage plateforme
         </h1>
         <p className="mt-2 text-sm font-body text-ink-500">
           Tous les KPIs temps réel et les actions admin prioritaires.

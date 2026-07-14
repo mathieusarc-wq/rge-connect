@@ -2,7 +2,7 @@ import { createServiceRoleClient } from "@/lib/supabase/server";
 import UsersClient from "./users-client";
 
 export const metadata = {
-  title: "Utilisateurs — Super Admin — RGE Connect",
+  title: "Utilisateurs — Super Admin — ENR Connect",
 };
 
 interface PageProps {

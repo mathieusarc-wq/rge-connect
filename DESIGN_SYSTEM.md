@@ -1,4 +1,4 @@
-# DESIGN_SYSTEM.md — RGE Connect
+# DESIGN_SYSTEM.md — ENR Connect
 
 Design system obligatoire. À appliquer à 100% sur **toute** UI : landing, dashboards, emails, PDF, composants. Qualité cible : Apple Keynote / Vercel / Linear. Aucune dérive vers du générique.
 
@@ -63,7 +63,7 @@ fontFamily: {
 - Small / meta : `text-sm font-body text-ink-500`
 - Label uppercase : `text-xs font-mono uppercase tracking-[0.2em] text-gold-500`
 
-**Wordmark RGE Connect** : toujours en Sora 800, avec le "O" de CONNECT en `gold.500`.
+**Wordmark ENR Connect** : toujours en Sora 800, avec le "O" de CONNECT en `gold.500`.
 
 ## 3. Composants de base à créer
 

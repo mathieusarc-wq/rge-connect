@@ -51,7 +51,7 @@ const webhooks = [
     id: "wh-158",
     event: "mission.status.changed",
     mission_id: "MIS-2024-0148",
-    target_url: "https://clim-express.com/api/webhooks/rge-connect",
+    target_url: "https://clim-express.com/api/webhooks/enr-connect",
     status: "delivered",
     http_status: 200,
     attempts: 1,
@@ -61,7 +61,7 @@ const webhooks = [
     id: "wh-157",
     event: "mission.scheduled",
     mission_id: "MIS-2024-0149",
-    target_url: "https://clim-express.com/api/webhooks/rge-connect",
+    target_url: "https://clim-express.com/api/webhooks/enr-connect",
     status: "delivered",
     http_status: 200,
     attempts: 1,
@@ -71,7 +71,7 @@ const webhooks = [
     id: "wh-156",
     event: "mission.photos.uploaded",
     mission_id: "MIS-2024-0148",
-    target_url: "https://clim-express.com/api/webhooks/rge-connect",
+    target_url: "https://clim-express.com/api/webhooks/enr-connect",
     status: "delivered",
     http_status: 200,
     attempts: 2,
@@ -81,7 +81,7 @@ const webhooks = [
     id: "wh-155",
     event: "mission.completed",
     mission_id: "MIS-2024-0145",
-    target_url: "https://clim-express.com/api/webhooks/rge-connect",
+    target_url: "https://clim-express.com/api/webhooks/enr-connect",
     status: "failed",
     http_status: 500,
     attempts: 3,
@@ -91,7 +91,7 @@ const webhooks = [
     id: "wh-154",
     event: "payment.executed",
     mission_id: "MIS-2024-0143",
-    target_url: "https://clim-express.com/api/webhooks/rge-connect",
+    target_url: "https://clim-express.com/api/webhooks/enr-connect",
     status: "delivered",
     http_status: 200,
     attempts: 1,
@@ -197,7 +197,7 @@ export default function ApiPage() {
                   Clés API
                 </h2>
                 <p className="text-sm font-body text-ink-500 mt-1">
-                  Intégrez RGE Connect à votre CRM pour créer des missions
+                  Intégrez ENR Connect à votre CRM pour créer des missions
                   automatiquement
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default function ApiPage() {
                 Endpoint de création de mission
               </h3>
               <pre className="text-xs font-mono bg-cream-50/5 p-4 rounded-lg overflow-x-auto">
-                <code>{`POST https://rge-connect.fr/api/v1/missions
+                <code>{`POST https://enr-connect.fr/api/v1/missions
 
 Headers:
   Authorization: Bearer rgec_A8xZk2pN_•••••••
@@ -319,7 +319,7 @@ Body:
                     URL de réception
                   </h3>
                   <p className="text-xs font-body text-ink-500 mt-1">
-                    Endpoint où RGE Connect envoie les événements signés HMAC-SHA256
+                    Endpoint où ENR Connect envoie les événements signés HMAC-SHA256
                   </p>
                 </div>
                 <span className="inline-flex items-center gap-1 rounded-md bg-forest-50 border border-forest-200 px-2 py-0.5 text-xs font-mono text-forest-600">
@@ -329,7 +329,7 @@ Body:
               </div>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-xs font-mono bg-cream-100 text-ink-700 px-3 py-2 rounded-lg border border-forest-100">
-                  https://clim-express.com/api/webhooks/rge-connect
+                  https://clim-express.com/api/webhooks/enr-connect
                 </code>
                 <button className="inline-flex items-center gap-1.5 rounded-lg border border-forest-100 bg-white px-3 py-2 text-xs font-body text-ink-600 hover:border-forest-200">
                   <ExternalLink className="h-3 w-3" />
@@ -434,7 +434,7 @@ Body:
                 Documentation API — v1
               </h3>
               <p className="text-sm font-body text-ink-500">
-                L&apos;API RGE Connect vous permet de créer, suivre et gérer vos
+                L&apos;API ENR Connect vous permet de créer, suivre et gérer vos
                 missions depuis votre CRM. Toutes les requêtes sont sécurisées
                 par Bearer token + BotID.
               </p>
@@ -564,7 +564,7 @@ Body:
                 <code>{`// Node.js — middleware de vérification
 import crypto from 'node:crypto';
 
-const SIGNING_SECRET = process.env.RGE_CONNECT_WEBHOOK_SECRET;
+const SIGNING_SECRET = process.env.ENR_CONNECT_WEBHOOK_SECRET;
 
 function verifyWebhook(rawBody, signatureHeader) {
   const [tsPart, sigPart] = signatureHeader.split(',');

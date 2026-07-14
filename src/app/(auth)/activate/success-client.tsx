@@ -37,7 +37,7 @@ export default function ActivationSuccess({
         <div className="mx-auto max-w-4xl flex items-center justify-center px-6 py-4">
           <div className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -62,10 +62,10 @@ export default function ActivationSuccess({
           <p className="mt-3 text-base font-body text-ink-600 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
             {firstName ? (
               <>
-                Bienvenue sur RGE Connect, <strong className="text-ink-900">{firstName}</strong>.
+                Bienvenue sur ENR Connect, <strong className="text-ink-900">{firstName}</strong>.
               </>
             ) : (
-              <>Bienvenue sur RGE Connect.</>
+              <>Bienvenue sur ENR Connect.</>
             )}
           </p>
 
@@ -79,7 +79,7 @@ export default function ActivationSuccess({
                   Prochaine étape
                 </p>
                 <p className="text-xs font-body text-ink-500">
-                  Upload tes documents avec l&apos;IA RGE Connect Vision
+                  Upload tes documents avec l&apos;IA ENR Connect Vision
                 </p>
               </div>
             </div>

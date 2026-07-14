@@ -1,4 +1,4 @@
-# RGE Connect
+# ENR Connect
 
 **La marketplace des chantiers RGE — Vendez. Nous posons.**
 
@@ -78,4 +78,4 @@ Specs détaillées : `CLAUDE.md`, `INTEGRATION_CLIM_EXPRESS.md`, `DESIGN_SYSTEM.
 
 ---
 
-© 2026 RGE Connect. Tous droits réservés.
+© 2026 ENR Connect. Tous droits réservés.

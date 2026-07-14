@@ -2,7 +2,7 @@ import ApiKeysClient from "./api-keys-client";
 import { getAllServiceKeys } from "./actions";
 
 export const metadata = {
-  title: "Clés API — Super Admin — RGE Connect",
+  title: "Clés API — Super Admin — ENR Connect",
 };
 
 export default async function ApiKeysPage() {

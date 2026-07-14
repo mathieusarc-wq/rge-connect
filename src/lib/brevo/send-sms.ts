@@ -132,9 +132,9 @@ export async function sendWelcomeSMS(params: {
   const fn = params.firstName.trim() || "";
   // Template court pour rentrer dans 1 SMS (160 chars max)
   const content = [
-    `RGE Connect - Bienvenue${fn ? " " + fn : ""} !`,
+    `ENR Connect - Bienvenue${fn ? " " + fn : ""} !`,
     `Ton compte est cree. Consulte ta boite mail pour l'activer.`,
-    `Aide : support@rge-connect.fr`,
+    `Aide : support@enr-connect.fr`,
   ].join("\n");
 
   return sendTransactionalSMS({

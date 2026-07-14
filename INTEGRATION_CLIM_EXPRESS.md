@@ -1,6 +1,6 @@
-# INTEGRATION_CLIM_EXPRESS.md — Intégration API RGE Connect ↔ Clim'Express
+# INTEGRATION_CLIM_EXPRESS.md — Intégration API ENR Connect ↔ Clim'Express
 
-Ce document spécifie l'intégration entre RGE Connect (ce repo) et Clim'Express CRM (repo externe `lm-energy-crm`). LM Energy est le premier client API de RGE Connect.
+Ce document spécifie l'intégration entre ENR Connect (ce repo) et Clim'Express CRM (repo externe `lm-energy-crm`). LM Energy est le premier client API de ENR Connect.
 
 **⚠️ À lire obligatoirement avant de coder l'endpoint `POST /api/missions`, l'authentification API key, ou le système de webhooks sortants.**
 
@@ -13,18 +13,18 @@ Ce document spécifie l'intégration entre RGE Connect (ce repo) et Clim'Express
       ↓
 [Clim'Express webhook Yousign]
       ↓
-[Clim'Express appelle POST /api/missions sur RGE Connect]
+[Clim'Express appelle POST /api/missions sur ENR Connect]
       ↓
-[RGE Connect crée la mission, diffuse aux sous-traitants]
+[ENR Connect crée la mission, diffuse aux sous-traitants]
       ↓
-[RGE Connect envoie webhooks à Clim'Express à chaque étape]
+[ENR Connect envoie webhooks à Clim'Express à chaque étape]
       ↓
 [Clim'Express met à jour le statut du devis]
 ```
 
 ## 2. Authentification par clé API
 
-Chaque installateur client dispose d'une ou plusieurs clés API pour appeler RGE Connect.
+Chaque installateur client dispose d'une ou plusieurs clés API pour appeler ENR Connect.
 
 ### Format des clés
 - Prefix : `rgec_live_` ou `rgec_test_` suivi de 32 caractères aléatoires
@@ -82,7 +82,7 @@ Content-Type: application/json
   "client_email": "jean.dupont@example.com",
   "preferred_dates": ["2026-04-20", "2026-04-22"],
   "notes": "Accès par garage, compteur au sous-sol, 2 étages",
-  "callback_url": "https://lm-energy-crm.vercel.app/api/webhooks/rge-connect"
+  "callback_url": "https://lm-energy-crm.vercel.app/api/webhooks/enr-connect"
 }
 ```
 
@@ -129,7 +129,7 @@ Content-Type: application/json
   "status": "pending",
   "trade": "PAC_AIR_EAU",
   "created_at": "2026-04-13T14:32:10Z",
-  "public_url": "https://rge-connect.fr/missions/mis_7f3a2b1c8d9e"
+  "public_url": "https://enr-connect.fr/missions/mis_7f3a2b1c8d9e"
 }
 ```
 
@@ -167,7 +167,7 @@ Réponse :
 
 ## 5. Webhooks sortants
 
-RGE Connect envoie des webhooks au `callback_url` fourni dans la création de mission, à chaque changement de statut significatif.
+ENR Connect envoie des webhooks au `callback_url` fourni dans la création de mission, à chaque changement de statut significatif.
 
 ### Événements émis
 - `mission.scheduled` — sous-traitant matché + créneau validé par le client
@@ -178,7 +178,7 @@ RGE Connect envoie des webhooks au `callback_url` fourni dans la création de mi
 
 ### Format du payload
 ```http
-POST https://lm-energy-crm.vercel.app/api/webhooks/rge-connect
+POST https://lm-energy-crm.vercel.app/api/webhooks/enr-connect
 Content-Type: application/json
 X-RGE-Connect-Signature: sha256=<hmac>
 X-RGE-Connect-Event-Id: evt_abc123
@@ -200,7 +200,7 @@ X-RGE-Connect-Timestamp: 1744554732
 
 ### Signature HMAC
 - Algo : HMAC-SHA256
-- Secret : stocké dans `RGE_CONNECT_WEBHOOK_SIGNING_SECRET` (env var, un par installateur ou global au démarrage)
+- Secret : stocké dans `ENR_CONNECT_WEBHOOK_SIGNING_SECRET` (env var, un par installateur ou global au démarrage)
 - Calcul : `hmac_sha256(secret, timestamp + "." + body)` — format Stripe-like
 - Header : `X-RGE-Connect-Signature: sha256=<hex>`
 
@@ -246,7 +246,7 @@ CREATE INDEX idx_webhooks_pending ON outbound_webhooks(status, next_retry_at) WH
 
 Avant de connecter Clim'Express en production, valider ce scénario complet :
 
-1. Créer un installer test + une clé API test dans RGE Connect
+1. Créer un installer test + une clé API test dans ENR Connect
 2. Appeler `POST /api/missions` avec un payload valide depuis Postman/curl
 3. Vérifier que la mission apparaît en BDD avec statut `pending`
 4. Simuler manuellement un changement de statut (SQL update)
@@ -259,7 +259,7 @@ Avant de connecter Clim'Express en production, valider ce scénario complet :
 
 ```
 # Signing secret pour webhooks sortants
-RGE_CONNECT_WEBHOOK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENR_CONNECT_WEBHOOK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Cron secret
 CRON_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

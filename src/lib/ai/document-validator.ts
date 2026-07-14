@@ -1,5 +1,5 @@
 /**
- * Validation stricte des documents RGE Connect.
+ * Validation stricte des documents ENR Connect.
  *
  * L'IA extrait, ce module valide en croisant avec le contexte d'inscription.
  * Statuts :
@@ -323,7 +323,7 @@ function checkIban(data: ExtractedFields, issues: ValidationIssue[]): void {
     issues.push({
       severity: "rejected",
       code: "iban_not_french",
-      message: `IBAN non français (${iban.slice(0, 2)}). RGE Connect supporte uniquement les comptes français pour le moment.`,
+      message: `IBAN non français (${iban.slice(0, 2)}). ENR Connect supporte uniquement les comptes français pour le moment.`,
       field: "iban",
     });
   }

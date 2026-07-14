@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import OnboardingClient from "./onboarding-client";
 
 export const metadata = {
-  title: "Upload tes documents — RGE Connect",
+  title: "Upload tes documents — ENR Connect",
 };
 
 interface PageProps {

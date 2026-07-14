@@ -7,7 +7,7 @@ import {
 } from "./document-validator";
 
 /**
- * Extraction IA (RGE Connect Vision) des documents d'onboarding.
+ * Extraction IA (ENR Connect Vision) des documents d'onboarding.
  *
  * Types supportés :
  * - kbis : raison sociale, SIRET, capital, dirigeant, date création
@@ -243,7 +243,7 @@ export async function extractDocument(
       max_tokens: 2048,
       thinking: { type: "adaptive" },
       system:
-        "Tu es RGE Connect Vision, un assistant spécialisé dans l'analyse de documents administratifs BTP français. Tu dois être précis et conservateur : mieux vaut un champ vide qu'une mauvaise donnée. Respecte strictement les formats demandés (dates YYYY-MM-DD, SIRET 14 chiffres, etc.).",
+        "Tu es ENR Connect Vision, un assistant spécialisé dans l'analyse de documents administratifs BTP français. Tu dois être précis et conservateur : mieux vaut un champ vide qu'une mauvaise donnée. Respecte strictement les formats demandés (dates YYYY-MM-DD, SIRET 14 chiffres, etc.).",
       tools: [tool],
       tool_choice: { type: "tool", name: tool.name },
       messages: [

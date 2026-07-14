@@ -34,7 +34,7 @@ export default function LoginPage() {
       <div className="lg:hidden flex items-center justify-center pt-8 pb-4 bg-cream-50">
         <Link href="/" className="flex items-center gap-0">
           <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-            RGE&nbsp;C
+            ENR&nbsp;C
           </span>
           <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
             O
@@ -51,7 +51,7 @@ export default function LoginPage() {
           {/* Logo desktop only */}
           <Link href="/" className="hidden lg:flex items-center gap-0 mb-12 justify-center">
             <span className="font-display text-xl font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-xl font-extrabold tracking-tight text-gold-500">
               O
@@ -65,7 +65,7 @@ export default function LoginPage() {
             Connexion
           </h1>
           <p className="mt-2 text-sm font-body text-ink-500">
-            Accédez à votre espace RGE Connect
+            Accédez à votre espace ENR Connect
           </p>
 
           {/* Error */}

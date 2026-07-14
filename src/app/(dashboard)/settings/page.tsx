@@ -220,12 +220,12 @@ function ZoneTab() {
           <div>
             <h3 className="text-sm font-display font-bold text-ink-900 mb-1">Siège social</h3>
             <p className="text-sm font-body text-ink-600">12 rue de la Paix, 69003 Lyon</p>
-            <p className="text-xs font-body text-ink-400 mt-1">Centre de votre zone d'intervention</p>
+            <p className="text-xs font-body text-ink-400 mt-1">Centre de votre zone d&apos;intervention</p>
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-body font-medium text-ink-700">Rayon d'intervention</Label>
+              <Label className="text-sm font-body font-medium text-ink-700">Rayon d&apos;intervention</Label>
               <span className="text-lg font-display font-bold text-forest-500">{radius} km</span>
             </div>
             <input

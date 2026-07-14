@@ -4,7 +4,7 @@ import { geocodeSiegeForZone } from "./actions";
 import ZoneClient from "./zone-client";
 
 export const metadata = {
-  title: "Ta zone d'intervention — RGE Connect",
+  title: "Ta zone d'intervention — ENR Connect",
 };
 
 interface PageProps {

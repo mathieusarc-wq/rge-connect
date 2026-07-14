@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import CreatingClient from "./creating-client";
 
 export const metadata = {
-  title: "Création de votre espace — RGE Connect",
+  title: "Création de votre espace — ENR Connect",
 };
 
 interface PageProps {

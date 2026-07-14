@@ -46,7 +46,7 @@ export default function ResendActivationClient() {
         <div className="mx-auto max-w-4xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -172,10 +172,10 @@ export default function ResendActivationClient() {
           <p className="mt-8 text-center text-xs font-body text-ink-400">
             Besoin d&apos;aide ?{" "}
             <a
-              href="mailto:support@rge-connect.fr"
+              href="mailto:support@enr-connect.fr"
               className="font-medium text-forest-500 hover:text-forest-700"
             >
-              support@rge-connect.fr
+              support@enr-connect.fr
             </a>
           </p>
         </div>

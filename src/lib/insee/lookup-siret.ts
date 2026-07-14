@@ -71,7 +71,7 @@ export async function lookupSiret(rawSiret: string): Promise<SiretLookupResult> 
 
   try {
     // API officielle data.gouv.fr — on cherche par SIRET exact
-    const url = `https://recherche-entreprises.api.gouv.fr/search?q=${siret}&per_page=1&mtm_campaign=rge-connect`;
+    const url = `https://recherche-entreprises.api.gouv.fr/search?q=${siret}&per_page=1&mtm_campaign=enr-connect`;
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
       // Cache 1h pour éviter les abus

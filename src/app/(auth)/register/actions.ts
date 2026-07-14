@@ -18,7 +18,7 @@ export type SignUpResult =
       code: "validation" | "duplicate_email" | "duplicate_siret" | "rate_limited" | "server_error";
     };
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://rge-connect.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://enr-connect.vercel.app";
 
 /**
  * Inscription sous-traitant.

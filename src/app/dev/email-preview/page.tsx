@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 export const metadata = {
-  title: "Preview email — RGE Connect",
+  title: "Preview email — ENR Connect",
 };
 
 // Page de preview des templates email (dev only, pas linkée)
@@ -23,9 +23,9 @@ export default async function EmailPreviewPage() {
   const mocked = rawHtml
     .replace(
       /\{\{\s*\.SiteURL\s*\}\}\/activate\?token_hash=\{\{\s*\.TokenHash\s*\}\}&type=signup/g,
-      "https://rge-connect.vercel.app/activate?token_hash=MOCK_TOKEN_PREVIEW&type=signup"
+      "https://enr-connect.vercel.app/activate?token_hash=MOCK_TOKEN_PREVIEW&type=signup"
     )
-    .replace(/\{\{\s*\.SiteURL\s*\}\}/g, "https://rge-connect.vercel.app")
+    .replace(/\{\{\s*\.SiteURL\s*\}\}/g, "https://enr-connect.vercel.app")
     .replace(/\{\{\s*\.TokenHash\s*\}\}/g, "MOCK_TOKEN_PREVIEW")
     .replace(/\{\{\s*\.Email\s*\}\}/g, "mathieu.sarc@gmail.com")
     .replace(/\{\{\s*\.Token\s*\}\}/g, "123456")
@@ -49,7 +49,7 @@ export default async function EmailPreviewPage() {
             </div>
             <div className="rounded-md bg-cream-100 px-3 py-2">
               <span className="text-ink-400">Sujet :</span><br />
-              <span className="text-ink-700">Active ton compte RGE Connect</span>
+              <span className="text-ink-700">Active ton compte ENR Connect</span>
             </div>
             <div className="rounded-md bg-cream-100 px-3 py-2">
               <span className="text-ink-400">Destinataire :</span><br />

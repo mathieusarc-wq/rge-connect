@@ -64,7 +64,7 @@ export function Sidebar() {
             className="flex items-center gap-0"
           >
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O

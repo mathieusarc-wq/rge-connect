@@ -740,7 +740,7 @@ export default function NewMissionPage() {
                   <Euro className="h-4 w-4 text-gold-500 flex-shrink-0 mt-0.5" />
                   <div className="text-xs font-body text-ink-700 leading-relaxed">
                     <span className="font-semibold">
-                      Commission RGE Connect :
+                      Commission ENR Connect :
                     </span>{" "}
                     3% du montant HT —{" "}
                     <span className="font-mono text-gold-700">

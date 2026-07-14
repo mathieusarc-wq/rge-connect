@@ -62,7 +62,7 @@ const transactions = [
     id: "SUB-0025",
     type: "Abonnement Business",
     mission: "—",
-    label: "RGE Connect Business — Mensuel",
+    label: "ENR Connect Business — Mensuel",
     direction: "out",
     amount: "199 €",
     commission: "—",
@@ -259,7 +259,7 @@ export default function InstallerPaymentsPage() {
                   </p>
                   {tx.mission !== "—" && (
                     <p className="text-xs font-body text-ink-500 mt-0.5">
-                      {tx.mission} · Commission RGE Connect : {tx.commission}
+                      {tx.mission} · Commission ENR Connect : {tx.commission}
                     </p>
                   )}
                 </div>

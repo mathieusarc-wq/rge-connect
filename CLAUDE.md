@@ -1,4 +1,4 @@
-# CLAUDE.md — RGE Connect
+# CLAUDE.md — ENR Connect
 
 Ta mémoire permanente sur ce projet. Lis-le en entier au démarrage de chaque session. Lis aussi `INTEGRATION_CLIM_EXPRESS.md` et `DESIGN_SYSTEM.md` avant de toucher au code.
 
@@ -6,17 +6,18 @@ Ta mémoire permanente sur ce projet. Lis-le en entier au démarrage de chaque s
 
 ## 1. Identité
 
-- **Nom** : RGE Connect
-- **Tagline** : La marketplace des chantiers RGE — Vendez. Nous posons.
+- **Nom** : ENR Connect
+- **Baseline** : L'énergie prend forme.
+- **Tagline complète** : La marketplace des chantiers énergies renouvelables.
 - **Owner** : Mathieu Sarciat
-- **Domaine** : rge-connect.fr
-- **Repo** : mathieusarc-wq/rge-connect
+- **Domaine cible** : enr-connect.fr (à réserver OVH)
+- **Repo actuel** : mathieusarc-wq/rge-connect (à renommer en `enr-connect` côté GitHub)
 - **Hosting** : Vercel auto-deploy sur `main`
 - **Statut** : nouveau projet, phase MVP
 
 ## 2. Mission du produit
 
-RGE Connect est une **infrastructure de confiance** qui relie installateurs ENR et artisans poseurs RGE certifiés en France. Pas un annuaire : une plateforme qui orchestre le chantier de A à Z, garantit les paiements via séquestre tiers, certifie la qualité d'exécution par horodatage eIDAS, et fournit un écosystème de services (fournisseurs négociés, décennale partenaire, conformité automatisée).
+ENR Connect est une **infrastructure de confiance** qui relie installateurs ENR et artisans poseurs RGE certifiés en France. Pas un annuaire : une plateforme qui orchestre le chantier de A à Z, garantit les paiements via séquestre tiers, certifie la qualité d'exécution par horodatage eIDAS, et fournit un écosystème de services (fournisseurs négociés, décennale partenaire, conformité automatisée).
 
 **Cibles** :
 - **Sous-traitants** : artisans RGE (QualiPac, QualiPV, QualiBois) cherchant un flux régulier de chantiers sécurisés
@@ -84,11 +85,11 @@ RGE Connect est une **infrastructure de confiance** qui relie installateurs ENR 
 - ❌ Gestion paie
 - ❌ Toute intrusion dans le RH du sous-traitant
 
-**Règle d'or produit** : RGE Connect pilote la mission, pas le sous-traitant.
+**Règle d'or produit** : ENR Connect pilote la mission, pas le sous-traitant.
 
 ## 6. Pricing à implémenter
 
-### Sous-traitants — RGE Connect Pro
+### Sous-traitants — ENR Connect Pro
 | Plan | Prix | Inclus | Commission |
 |------|------|--------|------------|
 | Standard | 79 €/mois | Pilier 1 + photos horodatées + PV + coffre-fort + avis auto + score | **3% fixe** |
@@ -96,7 +97,7 @@ RGE Connect est une **infrastructure de confiance** qui relie installateurs ENR 
 
 Affacturage 48h en option sur plan Pro : **10% fixe** par opération.
 
-### Installateurs — RGE Connect Business
+### Installateurs — ENR Connect Business
 | Plan | Prix | Inclus | Commission |
 |------|------|--------|------------|
 | Découverte | 0 €/mois | 3 chantiers/mois max | **3% fixe** |
@@ -200,8 +201,8 @@ Puis vérifier le deploy Vercel. Si fail : récupérer logs, corriger, repush ju
 ## 11. Prérequis bloquants hors dev (à faire en parallèle par Mathieu)
 
 Ces points ne bloquent pas le dev mais bloquent la mise en production :
-- [ ] Réservation domaines rge-connect.fr / rgeconnect.fr (OVH)
-- [ ] Dépôt marque INPI "RGE Connect" (classes 35, 37, 42)
+- [ ] Réservation domaines enr-connect.fr / enrconnect.fr (OVH)
+- [ ] Dépôt marque INPI "ENR Connect" (classes 35, 37, 42)
 - [ ] Création entité juridique SASU
 - [ ] Compte Mangopay créé + KYC entité validé
 - [ ] Compte Universign créé
@@ -238,8 +239,8 @@ BREVO_API_KEY=
 ANTHROPIC_API_KEY=
 
 # App
-NEXT_PUBLIC_APP_URL=https://rge-connect.fr
-RGE_CONNECT_WEBHOOK_SIGNING_SECRET=
+NEXT_PUBLIC_APP_URL=https://enr-connect.fr
+ENR_CONNECT_WEBHOOK_SIGNING_SECRET=
 
 # Cron
 CRON_SECRET=

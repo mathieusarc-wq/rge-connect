@@ -135,7 +135,7 @@ export default function CatalogPage() {
     <>
       <Topbar
         title="Catalogue fournisseurs"
-        description="Tarifs négociés exclusifs RGE Connect Business"
+        description="Tarifs négociés exclusifs ENR Connect Business"
       />
 
       <div className="px-6 lg:px-8 py-6 space-y-6">
@@ -147,7 +147,7 @@ export default function CatalogPage() {
             </div>
             <div>
               <h2 className="text-base font-display font-bold text-ink-900">
-                Centrale d&apos;achat RGE Connect
+                Centrale d&apos;achat ENR Connect
               </h2>
               <p className="text-sm font-body text-ink-600 mt-1">
                 Jusqu&apos;à <span className="font-semibold">-20%</span> sur les

@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "CGV Sous-traitant — RGE Connect",
+  title: "CGV Sous-traitant — ENR Connect",
   description:
-    "Conditions générales applicables aux artisans sous-traitants RGE utilisant la marketplace RGE Connect.",
+    "Conditions générales applicables aux artisans sous-traitants RGE utilisant la marketplace ENR Connect.",
 };
 
 export default function CgvSousTraitantPage() {
@@ -12,20 +12,20 @@ export default function CgvSousTraitantPage() {
       </p>
       <h1>Conditions Générales Sous-traitant</h1>
       <p className="text-ink-500 text-sm">
-        Version applicable aux artisans RGE utilisant la marketplace RGE Connect.
+        Version applicable aux artisans RGE utilisant la marketplace ENR Connect.
       </p>
 
       <h2>Préambule</h2>
       <p>
-        RGE Connect est une marketplace B2B qui met en relation des installateurs ENR (donneurs d&apos;ordre) et des artisans RGE (sous-traitants) pour l&apos;exécution de chantiers de rénovation énergétique en France métropolitaine. La plateforme est éditée par la société <strong>MS Distribution</strong> (SAS au capital de 10 000 €, RCS Bordeaux — SIREN 101 189 165, siège social 16 Place des Quinconces, 33000 Bordeaux), exploitant la marque « RGE Connect ». Elle intervient en qualité d&apos;intermédiaire technique et d&apos;agent de paiement via son partenaire Mangopay.
+        ENR Connect est une marketplace B2B qui met en relation des installateurs ENR (donneurs d&apos;ordre) et des artisans RGE (sous-traitants) pour l&apos;exécution de chantiers de rénovation énergétique en France métropolitaine. La plateforme est éditée par la société <strong>MS Distribution</strong> (SAS au capital de 10 000 €, RCS Bordeaux — SIREN 101 189 165, siège social 16 Place des Quinconces, 33000 Bordeaux), exploitant la marque « ENR Connect ». Elle intervient en qualité d&apos;intermédiaire technique et d&apos;agent de paiement via son partenaire Mangopay.
       </p>
       <p>
-        Les présentes Conditions Générales (ci-après les « <strong>CGV Sous-traitant</strong> ») régissent l&apos;accès et l&apos;utilisation de la plateforme RGE Connect par tout artisan professionnel (personne physique ou morale) disposant du statut RGE et souhaitant accepter des missions via la plateforme.
+        Les présentes Conditions Générales (ci-après les « <strong>CGV Sous-traitant</strong> ») régissent l&apos;accès et l&apos;utilisation de la plateforme ENR Connect par tout artisan professionnel (personne physique ou morale) disposant du statut RGE et souhaitant accepter des missions via la plateforme.
       </p>
 
       <h2>Article 1 — Définitions</h2>
       <ul>
-        <li><strong>Plateforme</strong> : le site rge-connect.fr et ses applications mobiles associées.</li>
+        <li><strong>Plateforme</strong> : le site enr-connect.fr et ses applications mobiles associées.</li>
         <li><strong>Éditeur</strong> : la société MS Distribution.</li>
         <li><strong>Sous-traitant</strong> : l&apos;artisan professionnel inscrit sur la Plateforme, titulaire d&apos;au moins une qualification RGE valide ou ayant déclaré exercer sans qualification RGE.</li>
         <li><strong>Installateur</strong> : le donneur d&apos;ordre qui publie une Mission.</li>
@@ -105,7 +105,7 @@ export default function CgvSousTraitantPage() {
       <h3>6.3 Exécution du chantier</h3>
       <p>Le Sous-traitant exécute la prestation conformément aux règles de l&apos;art, aux normes en vigueur (DTU, NF), aux obligations de qualification RGE, et dans le respect des délais convenus. Il s&apos;engage à :</p>
       <ul>
-        <li>prendre des photos horodatées eIDAS avant, pendant et après le chantier via l&apos;application RGE Connect ;</li>
+        <li>prendre des photos horodatées eIDAS avant, pendant et après le chantier via l&apos;application ENR Connect ;</li>
         <li>faire signer un procès-verbal de réception électronique au Client final ;</li>
         <li>transmettre les factures et justificatifs nécessaires à l&apos;éligibilité aux aides (MaPrimeRénov&apos;, CEE) si l&apos;Installateur les a sollicitées.</li>
       </ul>
@@ -123,7 +123,7 @@ export default function CgvSousTraitantPage() {
 
       <h3>7.2 Reversement</h3>
       <p>
-        Le reversement intervient à l&apos;issue d&apos;un délai de 48 heures suivant la signature du procès-verbal de réception sans réserve par le Client final, déduction faite de la commission RGE Connect (3 %) et, le cas échéant, de la commission d&apos;affacturage (10 %). Les fonds sont crédités sur le wallet Mangopay du Sous-traitant, qui peut demander un virement vers son compte bancaire à tout moment.
+        Le reversement intervient à l&apos;issue d&apos;un délai de 48 heures suivant la signature du procès-verbal de réception sans réserve par le Client final, déduction faite de la commission ENR Connect (3 %) et, le cas échéant, de la commission d&apos;affacturage (10 %). Les fonds sont crédités sur le wallet Mangopay du Sous-traitant, qui peut demander un virement vers son compte bancaire à tout moment.
       </p>
 
       <h3>7.3 Litige sur la prestation</h3>
@@ -185,7 +185,7 @@ export default function CgvSousTraitantPage() {
 
       <h2>Article 13 — Propriété intellectuelle</h2>
       <p>
-        La marque « RGE Connect », le logo, le design, le code source, les algorithmes de matching et les textes de la Plateforme sont la propriété exclusive de l&apos;Éditeur. Toute reproduction ou utilisation non autorisée est strictement interdite.
+        La marque « ENR Connect », le logo, le design, le code source, les algorithmes de matching et les textes de la Plateforme sont la propriété exclusive de l&apos;Éditeur. Toute reproduction ou utilisation non autorisée est strictement interdite.
       </p>
       <p>
         Le Sous-traitant conserve la propriété des contenus qu&apos;il publie (photos, commentaires, descriptions) mais concède à l&apos;Éditeur une licence non exclusive, mondiale et gratuite pour en permettre l&apos;affichage sur la Plateforme et les publications marketing associées, pour la durée de la relation contractuelle augmentée de 3 ans.
@@ -213,7 +213,7 @@ export default function CgvSousTraitantPage() {
 
       <hr />
       <p className="text-xs text-ink-400 mt-12">
-        Pour toute question relative à ces CGV : <a href="mailto:legal@rge-connect.fr">legal@rge-connect.fr</a>
+        Pour toute question relative à ces CGV : <a href="mailto:legal@enr-connect.fr">legal@enr-connect.fr</a>
       </p>
     </>
   );

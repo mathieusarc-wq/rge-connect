@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
       "Assurance décennale partenaire — tarif groupe négocié",
       "Centrale d'achats — tarifs négociés jusqu'à -20%",
       "Dashboard complet — suivi temps réel de tous vos chantiers",
-      "Support dédié — équipe RGE Connect joignable rapidement",
+      "Support dédié — équipe ENR Connect joignable rapidement",
     ],
   },
 ];

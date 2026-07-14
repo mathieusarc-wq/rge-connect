@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "CGV Installateur — RGE Connect",
+  title: "CGV Installateur — ENR Connect",
   description:
-    "Conditions générales applicables aux installateurs ENR utilisant la marketplace RGE Connect.",
+    "Conditions générales applicables aux installateurs ENR utilisant la marketplace ENR Connect.",
 };
 
 export default function CgvInstallateurPage() {
@@ -12,20 +12,20 @@ export default function CgvInstallateurPage() {
       </p>
       <h1>Conditions Générales Installateur</h1>
       <p className="text-ink-500 text-sm">
-        Version applicable aux sociétés installatrices d&apos;équipements ENR utilisant la marketplace RGE Connect pour confier la pose à des artisans sous-traitants.
+        Version applicable aux sociétés installatrices d&apos;équipements ENR utilisant la marketplace ENR Connect pour confier la pose à des artisans sous-traitants.
       </p>
 
       <h2>Préambule</h2>
       <p>
-        RGE Connect est une marketplace B2B qui permet à des installateurs de solutions ENR (pompes à chaleur, photovoltaïque, climatisation, ITE, isolation) de confier la pose de leurs installations à des artisans RGE certifiés, tout en orchestrant le suivi du chantier, les paiements sécurisés par séquestre Mangopay, et la conformité documentaire.
+        ENR Connect est une marketplace B2B qui permet à des installateurs de solutions ENR (pompes à chaleur, photovoltaïque, climatisation, ITE, isolation) de confier la pose de leurs installations à des artisans RGE certifiés, tout en orchestrant le suivi du chantier, les paiements sécurisés par séquestre Mangopay, et la conformité documentaire.
       </p>
       <p>
-        Les présentes Conditions Générales (ci-après les « <strong>CGV Installateur</strong> ») régissent l&apos;accès et l&apos;utilisation de la plateforme RGE Connect par toute personne morale (ci-après « <strong>l&apos;Installateur</strong> ») agissant dans le cadre de son activité professionnelle.
+        Les présentes Conditions Générales (ci-après les « <strong>CGV Installateur</strong> ») régissent l&apos;accès et l&apos;utilisation de la plateforme ENR Connect par toute personne morale (ci-après « <strong>l&apos;Installateur</strong> ») agissant dans le cadre de son activité professionnelle.
       </p>
 
       <h2>Article 1 — Définitions</h2>
       <ul>
-        <li><strong>Plateforme</strong> : le site rge-connect.fr, les applications associées et l&apos;API.</li>
+        <li><strong>Plateforme</strong> : le site enr-connect.fr, les applications associées et l&apos;API.</li>
         <li><strong>Éditeur</strong> : la société MS Distribution, éditrice de la Plateforme.</li>
         <li><strong>Installateur</strong> : la personne morale inscrite sur la Plateforme, titulaire d&apos;un contrat de vente avec un Client final et confiant la pose à un Sous-traitant.</li>
         <li><strong>Sous-traitant</strong> : l&apos;artisan RGE sélectionné via la Plateforme pour exécuter la pose.</li>
@@ -61,7 +61,7 @@ export default function CgvInstallateurPage() {
       <h2>Article 4 — Abonnement et plans</h2>
       <ul>
         <li><strong>Découverte</strong> — 0 € : 3 missions par mois maximum, dashboard basique. Accès limité à la fonctionnalité test. Commission 3 %.</li>
-        <li><strong>Business</strong> — 199 € HT par mois : missions illimitées, API et intégration CRM, SAV unique RGE Connect, garantie chantier (remplacement sous 48h), dashboard + reporting, centrale d&apos;achat fournisseurs négociés. Commission 3 %.</li>
+        <li><strong>Business</strong> — 199 € HT par mois : missions illimitées, API et intégration CRM, SAV unique ENR Connect, garantie chantier (remplacement sous 48h), dashboard + reporting, centrale d&apos;achat fournisseurs négociés. Commission 3 %.</li>
         <li><strong>Enterprise</strong> — 499 € HT par mois (ou sur devis) : tout Business + marque blanche, décennale parapluie en option, account manager dédié, SLA 24/7, conditions particulières négociables. Commission 3 %.</li>
       </ul>
       <p>L&apos;abonnement est prélevé par SEPA B2B le 1<sup>er</sup> de chaque mois. Il est sans engagement pour les plans Découverte et Business (résiliable à tout moment avec effet à la fin de la période en cours). Le plan Enterprise peut faire l&apos;objet d&apos;un engagement contractuel spécifique.</p>
@@ -105,7 +105,7 @@ export default function CgvInstallateurPage() {
 
       <h3>8.2 Commission</h3>
       <p>
-        La commission RGE Connect de 3 % est prélevée au moment du reversement vers le wallet du Sous-traitant. L&apos;Installateur reçoit une facture mensuelle consolidant l&apos;abonnement et les commissions prélevées sur le mois.
+        La commission ENR Connect de 3 % est prélevée au moment du reversement vers le wallet du Sous-traitant. L&apos;Installateur reçoit une facture mensuelle consolidant l&apos;abonnement et les commissions prélevées sur le mois.
       </p>
 
       <h3>8.3 Impayé</h3>
@@ -166,7 +166,7 @@ export default function CgvInstallateurPage() {
 
       <h2>Article 15 — Propriété intellectuelle</h2>
       <p>
-        La Plateforme (code, design, algorithmes, marque RGE Connect) est la propriété exclusive de l&apos;Éditeur. L&apos;Installateur n&apos;obtient qu&apos;une licence non exclusive, non transférable et limitée à la durée du contrat pour utiliser la Plateforme et l&apos;API.
+        La Plateforme (code, design, algorithmes, marque ENR Connect) est la propriété exclusive de l&apos;Éditeur. L&apos;Installateur n&apos;obtient qu&apos;une licence non exclusive, non transférable et limitée à la durée du contrat pour utiliser la Plateforme et l&apos;API.
       </p>
 
       <h2>Article 16 — Confidentialité</h2>
@@ -191,7 +191,7 @@ export default function CgvInstallateurPage() {
 
       <hr />
       <p className="text-xs text-ink-400 mt-12">
-        Pour toute question : <a href="mailto:legal@rge-connect.fr">legal@rge-connect.fr</a>
+        Pour toute question : <a href="mailto:legal@enr-connect.fr">legal@enr-connect.fr</a>
       </p>
     </>
   );

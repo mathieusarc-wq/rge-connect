@@ -76,7 +76,7 @@ Sois précis et conservateur : mieux vaut un champ vide qu'une mauvaise donnée.
 const EXTRACTION_TOOL = {
   name: "extract_mission_data",
   description:
-    "Extrait les données structurées d'un devis RGE pour pré-remplir une mission sur la plateforme RGE Connect.",
+    "Extrait les données structurées d'un devis RGE pour pré-remplir une mission sur la plateforme ENR Connect.",
   input_schema: {
     type: "object" as const,
     properties: {
@@ -196,7 +196,7 @@ export async function extractDevisData(pdfBase64: string): Promise<ExtractionRes
             },
             {
               type: "text",
-              text: "Extrais les données structurées de ce devis pour créer une mission RGE Connect. Utilise l'outil extract_mission_data.",
+              text: "Extrais les données structurées de ce devis pour créer une mission ENR Connect. Utilise l'outil extract_mission_data.",
             },
           ],
         },

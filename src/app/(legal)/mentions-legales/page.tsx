@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Mentions légales — RGE Connect",
-  description: "Informations légales relatives à l'éditeur et à l'hébergeur du site RGE Connect.",
+  title: "Mentions légales — ENR Connect",
+  description: "Informations légales relatives à l'éditeur et à l'hébergeur du site ENR Connect.",
 };
 
 export default function MentionsLegalesPage() {
@@ -16,7 +16,7 @@ export default function MentionsLegalesPage() {
 
       <h2>Éditeur du site</h2>
       <p>
-        <strong>MS Distribution</strong> — nom commercial <em>ELI Solution</em>, exploitant la marque <strong>RGE Connect</strong>
+        <strong>MS Distribution</strong> — nom commercial <em>ELI Solution</em>, exploitant la marque <strong>ENR Connect</strong>
         <br />
         Forme juridique : Société par Actions Simplifiée (SAS)
         <br />
@@ -37,7 +37,7 @@ export default function MentionsLegalesPage() {
         Président : Mathieu Sarciat
       </p>
       <p>
-        Email : <a href="mailto:contact@rge-connect.fr">contact@rge-connect.fr</a>
+        Email : <a href="mailto:contact@enr-connect.fr">contact@enr-connect.fr</a>
       </p>
 
       <h2>Directeur de la publication</h2>
@@ -77,7 +77,7 @@ export default function MentionsLegalesPage() {
 
       <h2>Propriété intellectuelle</h2>
       <p>
-        L&apos;ensemble du contenu de la Plateforme (textes, graphismes, logos, icônes, images, vidéos, sons, ainsi que leur mise en forme) est la propriété exclusive de RGE Connect SASU, à l&apos;exception des marques, logotypes ou contenus appartenant à d&apos;autres sociétés partenaires ou auteurs.
+        L&apos;ensemble du contenu de la Plateforme (textes, graphismes, logos, icônes, images, vidéos, sons, ainsi que leur mise en forme) est la propriété exclusive de ENR Connect SASU, à l&apos;exception des marques, logotypes ou contenus appartenant à d&apos;autres sociétés partenaires ou auteurs.
       </p>
       <p>
         Toute reproduction, distribution, modification, adaptation, retransmission ou publication, même partielle, de ces éléments est strictement interdite sans autorisation écrite préalable.
@@ -113,11 +113,11 @@ export default function MentionsLegalesPage() {
 
       <hr />
       <p className="text-xs text-ink-400 mt-12">
-        Contact général : <a href="mailto:contact@rge-connect.fr">contact@rge-connect.fr</a>
+        Contact général : <a href="mailto:contact@enr-connect.fr">contact@enr-connect.fr</a>
         <br />
-        Service juridique : <a href="mailto:legal@rge-connect.fr">legal@rge-connect.fr</a>
+        Service juridique : <a href="mailto:legal@enr-connect.fr">legal@enr-connect.fr</a>
         <br />
-        DPO : <a href="mailto:dpo@rge-connect.fr">dpo@rge-connect.fr</a>
+        DPO : <a href="mailto:dpo@enr-connect.fr">dpo@enr-connect.fr</a>
       </p>
     </>
   );

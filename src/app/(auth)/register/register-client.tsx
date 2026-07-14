@@ -23,7 +23,7 @@ export default function RegisterClient() {
         <div className="mx-auto max-w-4xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -73,7 +73,7 @@ function RoleSelection({
         <div className="mx-auto max-w-4xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -95,7 +95,7 @@ function RoleSelection({
         <div className="w-full max-w-2xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink-900 tracking-tight">
-              Rejoins RGE Connect
+              Rejoins ENR Connect
             </h1>
             <p className="mt-3 text-base font-body text-ink-500">
               Quel profil correspond à ton activité ?
@@ -135,7 +135,7 @@ function RoleSelection({
               </h3>
               <p className="text-sm font-body text-ink-500 leading-relaxed">
                 Je vends des installations ENR et je confie la pose à des
-                artisans RGE certifiés via RGE Connect.
+                artisans RGE certifiés via ENR Connect.
               </p>
               <div className="mt-4 inline-flex items-center gap-1 text-xs font-body font-medium text-forest-500 group-hover:text-forest-700">
                 Créer un compte installateur

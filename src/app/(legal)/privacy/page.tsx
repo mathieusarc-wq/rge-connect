@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Politique de confidentialité — RGE Connect",
-  description: "Traitement des données personnelles sur RGE Connect, conformité RGPD et CNIL.",
+  title: "Politique de confidentialité — ENR Connect",
+  description: "Traitement des données personnelles sur ENR Connect, conformité RGPD et CNIL.",
 };
 
 export default function PrivacyPage() {
@@ -16,10 +16,10 @@ export default function PrivacyPage() {
 
       <h2>1. Responsable de traitement</h2>
       <p>
-        Le responsable du traitement des données personnelles est la société <strong>MS Distribution</strong>, SAS au capital de 10 000 €, immatriculée au RCS de Bordeaux sous le SIREN 101 189 165, dont le siège social est situé au 16 Place des Quinconces, 33000 Bordeaux — exploitant la marque <strong>RGE Connect</strong>.
+        Le responsable du traitement des données personnelles est la société <strong>MS Distribution</strong>, SAS au capital de 10 000 €, immatriculée au RCS de Bordeaux sous le SIREN 101 189 165, dont le siège social est situé au 16 Place des Quinconces, 33000 Bordeaux — exploitant la marque <strong>ENR Connect</strong>.
       </p>
       <p>
-        Contact du Délégué à la Protection des Données (DPO) : <a href="mailto:dpo@rge-connect.fr">dpo@rge-connect.fr</a>
+        Contact du Délégué à la Protection des Données (DPO) : <a href="mailto:dpo@enr-connect.fr">dpo@enr-connect.fr</a>
         <br />
         Adresse postale DPO : MS Distribution — Service DPO, 16 Place des Quinconces, 33000 Bordeaux.
       </p>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
       </div>
 
       <h2>4. Destinataires et sous-traitants (article 28 RGPD)</h2>
-      <p>Les données sont traitées par RGE Connect et par les sous-traitants suivants, chacun liés par un contrat de sous-traitance conforme à l&apos;article 28 du RGPD :</p>
+      <p>Les données sont traitées par ENR Connect et par les sous-traitants suivants, chacun liés par un contrat de sous-traitance conforme à l&apos;article 28 du RGPD :</p>
       <div className="overflow-x-auto">
         <table className="text-sm">
           <thead>
@@ -92,7 +92,7 @@ export default function PrivacyPage() {
             <tr><td>Universign</td><td>Horodatage qualifié eIDAS</td><td>France</td></tr>
             <tr><td>Brevo (ex-Sendinblue)</td><td>Emails transactionnels et marketing, SMS</td><td>France</td></tr>
             <tr><td>Vercel Inc.</td><td>Hébergement de la Plateforme, CDN</td><td>États-Unis (SCC + DPF)</td></tr>
-            <tr><td>Anthropic, PBC</td><td>Extraction IA des devis (RGE Connect Vision)</td><td>États-Unis (SCC + zero data retention activé)</td></tr>
+            <tr><td>Anthropic, PBC</td><td>Extraction IA des devis (ENR Connect Vision)</td><td>États-Unis (SCC + zero data retention activé)</td></tr>
             <tr><td>API recherche-entreprises.api.gouv.fr</td><td>Vérification SIRET</td><td>France (DINUM)</td></tr>
           </tbody>
         </table>
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
       </ul>
 
       <h2>6. Sécurité des données</h2>
-      <p>RGE Connect met en œuvre les mesures techniques et organisationnelles suivantes :</p>
+      <p>ENR Connect met en œuvre les mesures techniques et organisationnelles suivantes :</p>
       <ul>
         <li>Chiffrement des données en transit (TLS 1.3) et au repos (AES-256) ;</li>
         <li>Authentification forte via Supabase Auth (hachage bcrypt/argon2 des mots de passe, tokens PKCE) ;</li>
@@ -144,11 +144,11 @@ export default function PrivacyPage() {
         <li><strong>Directives post-mortem</strong> (loi Informatique et Libertés art. 85) : définir le sort de vos données après votre décès.</li>
       </ul>
       <p>
-        Pour exercer vos droits, adressez un email à <a href="mailto:dpo@rge-connect.fr">dpo@rge-connect.fr</a> avec la copie d&apos;une pièce d&apos;identité. Réponse sous 1 mois (prorogeable de 2 mois si complexité).
+        Pour exercer vos droits, adressez un email à <a href="mailto:dpo@enr-connect.fr">dpo@enr-connect.fr</a> avec la copie d&apos;une pièce d&apos;identité. Réponse sous 1 mois (prorogeable de 2 mois si complexité).
       </p>
 
       <h2>8. Cookies et traceurs</h2>
-      <p>RGE Connect utilise les catégories de cookies suivantes :</p>
+      <p>ENR Connect utilise les catégories de cookies suivantes :</p>
       <ul>
         <li><strong>Cookies strictement nécessaires</strong> (session, authentification, CSRF) : exemptés de consentement (art. 82 LIL).</li>
         <li><strong>Cookies de mesure d&apos;audience</strong> : paramétrés pour être exemptés de consentement selon les recommandations CNIL (anonymisation IP, pas de recoupement).</li>
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
 
       <hr />
       <p className="text-xs text-ink-400 mt-12">
-        Pour toute question : <a href="mailto:dpo@rge-connect.fr">dpo@rge-connect.fr</a>
+        Pour toute question : <a href="mailto:dpo@enr-connect.fr">dpo@enr-connect.fr</a>
       </p>
     </>
   );

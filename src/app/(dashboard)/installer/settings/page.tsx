@@ -123,7 +123,7 @@ function AbonnementTab() {
               </span>
             </div>
             <h3 className="text-2xl font-display font-bold text-ink-900">
-              RGE Connect Business
+              ENR Connect Business
             </h3>
             <p className="text-sm font-body text-ink-600 mt-1">
               Chantiers illimités + API + garantie + dashboard complet

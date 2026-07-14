@@ -80,10 +80,10 @@ export default function CreatingClient({
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-gold-500/10 blur-[80px] pointer-events-none" />
 
       <div className="relative w-full max-w-xl px-6 py-12 text-center">
-        {/* Logo RGE Connect */}
+        {/* Logo ENR Connect */}
         <div className="inline-flex items-center gap-0 mb-10 animate-in fade-in zoom-in duration-700">
           <span className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-forest-500">
-            RGE&nbsp;C
+            ENR&nbsp;C
           </span>
           <span className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-gold-500">
             O
@@ -172,7 +172,7 @@ export default function CreatingClient({
         {/* Final message */}
         {currentStep >= steps.length && (
           <p className="mt-8 text-sm font-body text-forest-600 font-semibold animate-in fade-in duration-500">
-            Bienvenue sur RGE Connect ✓
+            Bienvenue sur ENR Connect ✓
           </p>
         )}
       </div>

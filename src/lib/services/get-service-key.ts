@@ -26,7 +26,7 @@ const ENV_FALLBACK: Record<string, string> = {
   "yousign:webhook_secret": "YOUSIGN_WEBHOOK_SECRET",
   "universign:api_key": "UNIVERSIGN_API_KEY",
   "universign:profile": "UNIVERSIGN_PROFILE",
-  "rge_connect:webhook_signing_secret": "RGE_CONNECT_WEBHOOK_SIGNING_SECRET",
+  "enr_connect:webhook_signing_secret": "ENR_CONNECT_WEBHOOK_SIGNING_SECRET",
   "cron:secret": "CRON_SECRET",
 };
 

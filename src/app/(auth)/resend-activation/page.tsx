@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import ResendActivationClient from "./resend-client";
 
 export const metadata = {
-  title: "Renvoyer l'email d'activation — RGE Connect",
+  title: "Renvoyer l'email d'activation — ENR Connect",
 };
 
 export default function ResendActivationPage() {

@@ -203,7 +203,7 @@ export default function OnboardingClient({
         <div className="mx-auto max-w-3xl flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -232,7 +232,7 @@ export default function OnboardingClient({
           <div className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-3 py-1 mb-4">
             <Sparkles className="h-3 w-3 text-forest-900" strokeWidth={2.5} />
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-forest-900 font-semibold">
-              RGE Connect Vision
+              ENR Connect Vision
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-ink-900 tracking-tight">
@@ -290,7 +290,7 @@ export default function OnboardingClient({
                   ? needsNextStep
                     ? "Prochaine étape : définir ta zone d'intervention."
                     : "Ton espace est prêt à être créé."
-                  : "RGE Connect Vision vérifie chaque document : SIRET, dates, cohérence avec tes infos."}
+                  : "ENR Connect Vision vérifie chaque document : SIRET, dates, cohérence avec tes infos."}
               </p>
             </div>
             <button
@@ -462,7 +462,7 @@ function DocumentSlot({
           <div className="rounded-lg bg-gold-500/5 border border-gold-300/40 p-3 flex items-center gap-3">
             <Loader2 className="h-4 w-4 text-gold-600 animate-spin" />
             <div className="text-xs font-body text-ink-700">
-              <p className="font-semibold">RGE Connect Vision analyse le document…</p>
+              <p className="font-semibold">ENR Connect Vision analyse le document…</p>
               <p className="text-ink-500 mt-0.5">5 à 15 secondes</p>
             </div>
           </div>

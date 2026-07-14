@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Audit — Super Admin — RGE Connect",
+  title: "Audit — Super Admin — ENR Connect",
 };
 
 interface PageProps {

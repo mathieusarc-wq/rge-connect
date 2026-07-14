@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Données — Super Admin — RGE Connect",
+  title: "Données — Super Admin — ENR Connect",
 };
 
 export default async function DataPage() {
@@ -163,7 +163,7 @@ export default async function DataPage() {
           Analytics plateforme
         </h1>
         <p className="mt-2 text-sm font-body text-ink-500">
-          KPIs temps réel de toute l&apos;activité RGE Connect.
+          KPIs temps réel de toute l&apos;activité ENR Connect.
         </p>
       </div>
 
@@ -213,7 +213,7 @@ export default async function DataPage() {
             sub="Total prélèvements installateurs"
           />
           <Kpi
-            label="Commissions RGE Connect"
+            label="Commissions ENR Connect"
             value={formatEur(commissions)}
             icon={ShieldCheck}
             color="gold"

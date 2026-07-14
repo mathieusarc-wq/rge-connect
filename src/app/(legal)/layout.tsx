@@ -13,7 +13,7 @@ export default function LegalLayout({
         <div className="mx-auto max-w-4xl flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-0">
             <span className="font-display text-lg font-extrabold tracking-tight text-forest-500">
-              RGE&nbsp;C
+              ENR&nbsp;C
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight text-gold-500">
               O
@@ -45,8 +45,8 @@ export default function LegalLayout({
           <AlertTriangle className="h-4 w-4 text-gold-700 flex-shrink-0 mt-0.5" strokeWidth={2} />
           <p className="text-xs font-body text-ink-700 leading-relaxed">
             <strong className="font-semibold">Document provisoire</strong> — en cours de validation par avocat marketplace BTP. Pour toute interprétation contraignante, contacter{" "}
-            <a href="mailto:legal@rge-connect.fr" className="font-semibold text-forest-700 hover:underline">
-              legal@rge-connect.fr
+            <a href="mailto:legal@enr-connect.fr" className="font-semibold text-forest-700 hover:underline">
+              legal@enr-connect.fr
             </a>
             .
           </p>
@@ -63,7 +63,7 @@ export default function LegalLayout({
       <footer className="border-t border-forest-100 bg-white mt-12">
         <div className="mx-auto max-w-4xl px-6 py-6 text-center">
           <p className="text-xs font-body text-ink-500">
-            © {new Date().getFullYear()} RGE Connect — Tous droits réservés
+            © {new Date().getFullYear()} ENR Connect — Tous droits réservés
           </p>
         </div>
       </footer>
