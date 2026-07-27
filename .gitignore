@@ -43,3 +43,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+node_modules/
+.env
+.env.*
+!.env.example
+logs/
+*.log
+out/
+.next/
+.env.save
+.next/dev/cache/turbopack/c573e8c4f/00001795.sst
+.next/dev/cache/turbopack/c573e8c4f/00001794.sst
